@@ -88,3 +88,14 @@ nb-configuration.xml
 ## Miscellaneous
 ##############################
 *.log
+
+######################
+## Stuff
+target
+libs
+.idea
+${dir}
+CriticalFixes/target
+CriticalFixes/libs
+CriticalFixes/.idea
+CriticalFixes/${dir}
