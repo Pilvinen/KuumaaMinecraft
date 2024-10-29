@@ -1,0 +1,85 @@
+name: CriticalFixes
+version: '${project.version}'
+main: starandserpent.minecraft.criticalfixes.CriticalFixes
+api-version: '1.20'
+depend: [ ProtocolLib, NDatabase ]
+softdepend: [ Tooltips ]
+commands:
+  setwarp:
+    description: Set a warp point
+    usage: /setwarp <warpName>
+  warp:
+    description: Warp to a warp point
+    usage: |-
+      /warp <warpName>
+      /warp <playerName> <warpName>
+  warplist:
+    description: List all warp points
+    usage: /warplist
+  deletewarp:
+    description: Delete a warp point
+    usage: /deletewarp <warpName>
+  creative:
+    description: Toggle creative mode
+    usage: |-
+      /creative
+      /creative <playerName>
+  survival:
+    description: Toggle survival mode
+    usage: |-
+      /survival
+      /survival <playerName>
+  adventure:
+    description: Toggle adventure mode
+    usage: |-
+      /adventure
+      /adventure <playerName>
+  spectator:
+    description: Toggle spectator mode
+    usage: |-
+      /spectator
+      /spectator <playerName>
+  rain:
+    description: Toggle rain
+    usage: /rain
+  thunder:
+    description: Toggle thunder
+    usage: /thunder
+  sun:
+    description: Toggle sun
+    usage: /sun
+  porttikielto:
+    description: Anna porttikielto pelaajalle
+    usage: |-
+      /porttikielto <pelaajan nimi>
+      /porttikielto <pelaajan nimi> <kesto päivissä>
+      /porttikielto <pelaajan nimi> <kesto päivissä> <porttikiellon syy>
+      /porttikielto <pelaajan nimi> <porttikiellon syy>
+  armahda:
+    description: Armahda porttikiellon saanut pelaaja
+    usage: |-
+      /armahda <pelaajan nimi>
+      /armahda <pelaajan nimi> <armahduksen syy>
+  broadcast:
+    description: Broadcast a system message to all players
+    usage: /broadcast <message>
+  ilmoitus:
+    description: Lähetä järjestelmäilmoitus kaikille pelaajille
+    usage: /ilmoitus <viesti>
+  ilmoita:
+    description: Lähetä järjestelmäilmoitus kaikille pelaajille
+    usage: /ilmoita <viesti>
+  tilastoja:
+    description: Näytä tilastoja palvelimesta
+    usage: |-
+      /tilastoja
+  statistics:
+    description: Show server statistics
+    usage: |-
+      /statistics
+  anna:
+    description: Anna pelaajalle esine
+    usage: |-
+      /anna <pelaajan nimi> <esine>
+      /anna <pelaajan nimi> <esine> <määrä>
+

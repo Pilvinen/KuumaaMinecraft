@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>StarAndSerpent.Minecraft</groupId>
+  <artifactId>CriticalFixes</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>CriticalFixes</name>
+
+  <properties>
+    <java.version>17</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <source>17</source>
+          <target>17</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+
+          </execution>
+        </executions>
+
+<!-- Prevent backup of the original jar -->
+          <configuration>
+      <outputFile>${dir}/${project.artifactId}.jar</outputFile>
+      <filters>
+        <filter>
+          <artifact>*:*</artifact>
+          <excludes>
+            <exclude>META-INF/MANIFEST.MF</exclude>
+            <exclude>META-INF/*.SF</exclude>
+            <exclude>META-INF/*.DSA</exclude>
+            <exclude>META-INF/*.RSA</exclude>
+              <!-- Exclude NDatabase package. Needed if local package is used so shadowing
+              plugin does not include the package in the final jar. Otherwise, it will error out.
+
+              <exclude>com/nivixx/ndatabase/**</exclude>
+              -->
+
+          </excludes>
+        </filter>
+      </filters>
+    </configuration>
+<!-- Prevent backup of the original jar -->
+
+      </plugin>
+
+<!-- Copy the resulting jar files to what ever folder -->
+        <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+                <execution>
+                    <id>copy-resource-one</id>
+                    <phase>generate-sources</phase>
+                    <goals>
+                        <goal>copy-resources</goal>
+                    </goals>
+                    <configuration>
+                        <outputDirectory>/home/pilvinen/Minecraft/plugins</outputDirectory>
+                        <resources>
+                            <resource>
+                                <directory>target</directory>
+                                <includes>
+                                    <include>*.jar</include>
+                                </includes>
+                            </resource>
+                        </resources>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+<!-- Copy the resulting jar files to what ever folder -->
+
+    </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+  </build>
+
+  <repositories>
+      <repository>
+          <id>spigotmc-repo</id>
+          <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+      </repository>
+      <repository>
+          <id>sonatype</id>
+          <url>https://oss.sonatype.org/content/groups/public/</url>
+      </repository>
+
+
+      <repository>
+          <id>dmulloy2-repo</id>
+          <url>https://repo.dmulloy2.net/repository/public/</url>
+      </repository>
+
+      <repository>
+          <id>jitpack.io</id>
+          <url>https://jitpack.io</url>
+      </repository>
+
+  </repositories>
+
+  <dependencies>
+      <dependency>
+          <groupId>org.spigotmc</groupId>
+          <artifactId>spigot-api</artifactId>
+          <version>1.21.1-R0.1-SNAPSHOT</version>
+          <scope>provided</scope>
+      </dependency>
+
+      <!-- Tooltips -->
+      <dependency>
+          <groupId>com.github.Septicuss</groupId>
+          <artifactId>tooltips</artifactId>
+          <version>1.8</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+      <dependency>
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
+          <version>1.17.0</version>
+      </dependency>
+
+      <dependency>
+          <groupId>com.github.NivixX.NDatabase</groupId>
+          <artifactId>ndatabase-api</artifactId>
+          <version>1.4.1</version>
+          <scope>provided</scope>
+      </dependency>
+
+
+      <!-- Get from web
+      <dependency>
+          <groupId>com.comphenix.protocol</groupId>
+          <artifactId>ProtocolLib</artifactId>
+          <version>5.2.0-SNAPSHOT</version>
+          <scope>provided</scope>
+      </dependency>
+      -->
+
+      <!-- Get from local .jar file -->
+      <dependency>
+          <groupId>com.comphenix.protocol</groupId>
+          <artifactId>ProtocolLib</artifactId>
+          <version>5.3.0</version>
+          <scope>system</scope>
+          <systemPath>${project.basedir}/libs/ProtocolLib.jar</systemPath>
+      </dependency>
+      <!-- Get from local .jar file -->
+
+      <!-- Get from local .jar file -->
+      <dependency>
+          <groupId>me.clip.placeholderapi.expansion</groupId>
+          <artifactId>PlaceholderExpansion</artifactId>
+          <version>PlaceholderAPI-2.11.6</version>
+          <scope>system</scope>
+          <systemPath>${project.basedir}/libs/PlaceholderAPI-2.11.6.jar</systemPath>
+      </dependency>
+      <!-- Get from local .jar file -->
+
+      <!-- Get from local .jar file -->
+      <dependency>
+          <groupId>net.advancedplugins.seasons.api</groupId>
+          <artifactId>AdvancedSeasons</artifactId>
+          <version>AdvancedSeasons-1.3.14</version>
+          <scope>system</scope>
+          <systemPath>${project.basedir}/libs/AdvancedSeasons-1.3.14.jar</systemPath>
+      </dependency>
+      <!-- Get from local .jar file -->
+
+      <!-- GSit API -->
+      <dependency>
+          <groupId>com.github.Gecolay.GSit</groupId>
+          <artifactId>core</artifactId>
+          <version>LATEST</version>
+          <scope>provided</scope>
+      </dependency>
+      <!-- GSit API -->
+
+      <dependency>
+          <groupId>org.jetbrains</groupId>
+          <artifactId>annotations</artifactId>
+          <version>24.0.0</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.json</groupId>
+          <artifactId>json</artifactId>
+          <version>20240303</version>
+      </dependency>
+
+  </dependencies>
+
+
+
+</project>
