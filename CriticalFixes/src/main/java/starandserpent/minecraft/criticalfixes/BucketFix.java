@@ -22,9 +22,15 @@ public class BucketFix implements Listener {
     // When pouring with water bucket
     @EventHandler public void onPlayerBucket(PlayerBucketEmptyEvent event) {
 
+        // Only handle water buckets.
+        if (event.getBucket() != Material.WATER_BUCKET) {
+            return;
+        }
+
         var blockToFill = event.getBlock();
         var blockToFillType = blockToFill.getType();
 
+        // If the block is not air or cave air, cancel the event. The player is doing something like opening the door or what ever?
         if (blockToFillType != Material.AIR && blockToFillType != Material.CAVE_AIR) {
             return;
         }
@@ -34,31 +40,8 @@ public class BucketFix implements Listener {
         var blockBelowPlayer = player.getLocation().getBlock().getRelative(0,-1,0).getType() == Material.AIR;
         if (blockBelowPlayer) {
             event.setCancelled(true);
-            return;
         }
 
-        // Set target block to water
-        blockToFill.setType(Material.WATER);
-
-        // Get the BlockData for the block
-        BlockData blockData = blockToFill.getBlockData();
-
-        // Check if the BlockData is an instance of Levelled (which it should be for water)
-        if (blockData instanceof org.bukkit.block.data.Levelled levelled) {
-
-            // Cancel event
-            event.setCancelled(true);
-
-            // Bukkit delay
-            server.getScheduler().runTaskLater(plugin, () -> {
-                // Set the level to 8 so that the water is "falling"
-                levelled.setLevel(8);
-
-                // Set the block's BlockData to the updated Levelled instance
-                blockToFill.setBlockData(levelled);
-            }, 8);
-
-        }
     }
 
 }
