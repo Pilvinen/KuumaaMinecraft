@@ -6,6 +6,7 @@ import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +32,15 @@ public class SystemNotifications implements CommandExecutor, Listener {
         if (command.getName().equalsIgnoreCase("broadcast")
             || command.getName().equalsIgnoreCase("ilmoitus")
             || command.getName().equalsIgnoreCase("ilmoita")) {
+
+            // Check permissions. Is console? Is op?
+            if (!(sender instanceof ConsoleCommandSender)) {
+                if (!sender.isOp()) {
+                    sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+                    return true;
+                }
+            }
+
             if (args.length == 0) {
                 return false;
             }
