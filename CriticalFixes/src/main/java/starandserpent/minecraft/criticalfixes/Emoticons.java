@@ -314,23 +314,23 @@ public class Emoticons implements Listener {
 
     private boolean isEyelids(ItemStack itemStack) {
         if (itemStack == null) {
-            System.out.println("Item stack is null.");
+//            System.out.println("Item stack is null.");
             return false;
         }
 
         if (itemStack.getType() != CustomItemsEnum.EYELIDS_2X2.getMaterial()) {
-            System.out.println("Item stack is not eyelids material.");
+//            System.out.println("Item stack is not eyelids material.");
             return false;
         }
 
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta == null) {
-            System.out.println("Item meta is null.");
+//            System.out.println("Item meta is null.");
             return false;
         }
 
         boolean hasEyelidData = itemMeta.getCustomModelData() == CustomItemsEnum.EYELIDS_2X2.getId();
-        System.out.println("Item has eyelid data: " + hasEyelidData);
+//        System.out.println("Item has eyelid data: " + hasEyelidData);
         return hasEyelidData;
     }
 

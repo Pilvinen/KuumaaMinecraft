@@ -65,7 +65,7 @@ public class DroppedItems implements Listener {
         // Get player by UUID.
         var player = server.getPlayer(itemDropper);
         if (player == null) {
-            System.out.println("Player was not found.");
+//            System.out.println("Player was not found.");
             return;
         }
 
@@ -91,28 +91,28 @@ public class DroppedItems implements Listener {
 
                 // We ultimately failed to place the item on the ground.
                 if (count > 6) {
-                    System.out.println("Item was not placed on the ground successfully in time.");
+//                    System.out.println("Item was not placed on the ground successfully in time.");
                     this.cancel();
                     return;
                 }
 
                 // Check if the item is still on the ground.
                 if (item.isDead()) {
-                    System.out.println("Item is dead.");
+//                    System.out.println("Item is dead.");
                     this.cancel();
                     return;
                 }
 
                 // Check if the item is still the same item.
                 if (!item.getItemStack().equals(itemStack)) {
-                    System.out.println("Item is not the same item.");
+//                    System.out.println("Item is not the same item.");
                     this.cancel();
                     return;
                 }
 
                 // Check if it's a single item. We don't want to deal with stacks.
                 if (itemStack.getAmount() != 1) {
-                    System.out.println("Item is not a single item.");
+//                    System.out.println("Item is not a single item.");
                     this.cancel();
                     return;
                 }
@@ -124,20 +124,20 @@ public class DroppedItems implements Listener {
                 var blockBelowItemLocation = blockAtItemLocation.getRelative(BlockFace.DOWN);
                 var blockTypeBelowItemLocation = blockBelowItemLocation.getType();
                 if (blockTypeAtItemLocation != Material.AIR) {
-                    System.out.println("Item is not on the ground.");
+//                    System.out.println("Item is not on the ground.");
                     return;
                 }
 
                 // DEBUG: Check the type of block at and below.
-                System.out.println("Block at item location: " + blockTypeAtItemLocation);
-                System.out.println("Block below item location: " + blockTypeBelowItemLocation);
+//                System.out.println("Block at item location: " + blockTypeAtItemLocation);
+//                System.out.println("Block below item location: " + blockTypeBelowItemLocation);
 
                 // Only accepted surfaces are allowed.
                 if (!Tag.PLANKS.isTagged(blockTypeBelowItemLocation)
                     && blockTypeBelowItemLocation != Material.CHISELED_BOOKSHELF
                     && !Tag.SLABS.isTagged(blockTypeBelowItemLocation)
                     && blockTypeBelowItemLocation != Material.BOOKSHELF) {
-                    System.out.println("Item is not on a proper surface.");
+//                    System.out.println("Item is not on a proper surface.");
                     return;
                 }
 
@@ -151,13 +151,13 @@ public class DroppedItems implements Listener {
                 boolean successfullyPlacedItem = false;
                 // If there's no item frame there, we can just place one with no worries.
                 if (itemFrameAtLocation == null) {
-                    System.out.println("No item frame at location.");
+//                    System.out.println("No item frame at location.");
                     placeItemOnTheGround(blockAtItemLocation, itemStack, this);
                     successfullyPlacedItem = true;
                 } else {
-                    System.out.println("Item frame at location.");
+//                    System.out.println("Item frame at location.");
                     if (weCanAddMoreItemsToItemFrame(itemFrameAtLocation, itemStack)) {
-                        System.out.println("Yes! We can add more items to the item frame.");
+//                        System.out.println("Yes! We can add more items to the item frame.");
                         successfullyPlacedItem = true;
                     }
                     tryToPlaceMoreItemsInItemFrame(itemFrameAtLocation, itemStack, this);
@@ -183,14 +183,14 @@ public class DroppedItems implements Listener {
 
         // If the item in the item frame is not a book, we don't want to deal with it.
         if (itemInItemFrameType != Material.BOOK) {
-            System.out.println("Item in item frame is not a book.");
+//            System.out.println("Item in item frame is not a book.");
             return false;
         }
 
         // We can add to max 5 books in a stack.
         var metaData = itemInItemFrame.getItemMeta();
         if (metaData == null) {
-            System.out.println("Item in item frame has no item meta.");
+//            System.out.println("Item in item frame has no item meta.");
             return false;
         }
 
@@ -219,11 +219,11 @@ public class DroppedItems implements Listener {
         // Get the item in the item frame.
         var itemInItemFrame = itemFrameAtLocation.getItem();
 
-        System.out.println("Attempting heroically to place more items in the item frame.");
+//        System.out.println("Attempting heroically to place more items in the item frame.");
         // Get the custom model data of the item in the item frame.
         var itemMeta = itemInItemFrame.getItemMeta();
         if (itemMeta == null) {
-            System.out.println("Item in item frame has no item meta.");
+//            System.out.println("Item in item frame has no item meta.");
             task.cancel();
             return;
         }
@@ -231,22 +231,22 @@ public class DroppedItems implements Listener {
         int customModelData = -1;
         boolean hasCustomModelData = itemMeta.hasCustomModelData();
         if (hasCustomModelData) {
-            System.out.println("Item in item frame has custom model data!");
+//            System.out.println("Item in item frame has custom model data!");
             customModelData = itemMeta.getCustomModelData();
-            System.out.println("And the custom model data is: " + customModelData);
+//            System.out.println("And the custom model data is: " + customModelData);
         } else { // DEBUG
-            System.out.println("Item in item frame has NO custom model data.");
+//            System.out.println("Item in item frame has NO custom model data.");
         }
 
         var nextCustomItemId = getNextCustomItemId(customModelData);
 
         if (nextCustomItemId == -1) {
-            System.out.println("Next custom item id is -1.");
+//            System.out.println("Next custom item id is -1.");
             task.cancel();
             return;
         }
 
-        System.out.println("Next custom item id will be: " + nextCustomItemId);
+//        System.out.println("Next custom item id will be: " + nextCustomItemId);
 
         // Set the item to the next custom item. We're stacking it up.
         itemMeta.setCustomModelData(nextCustomItemId);
@@ -255,7 +255,7 @@ public class DroppedItems implements Listener {
         // Update the item in the item frame.
         itemFrameAtLocation.setItem(itemInItemFrame);
 
-        System.out.println("Item was placed in the item frame successfully.");
+//        System.out.println("Item was placed in the item frame successfully.");
 
     }
 
@@ -309,7 +309,7 @@ public class DroppedItems implements Listener {
         var location = blockAtItemLocation.getLocation();
         var world = location.getWorld();
         if (world == null) {
-            System.out.println("World is null.");
+//            System.out.println("World is null.");
             task.cancel();
             return;
         }
@@ -322,14 +322,14 @@ public class DroppedItems implements Listener {
         Rotation randomRotation = Rotation.values()[(int) (Math.random() * Rotation.values().length)];
         itemFrame.setRotation(randomRotation);
 
-        System.out.println("Item was placed on the ground successfully.");
+//        System.out.println("Item was placed on the ground successfully.");
     }
 
     // On removing an item from item frame.
     @EventHandler public void onItemFrameRemove(EntityDamageByEntityEvent event) {
         var entity = event.getEntity();
         if (!(entity instanceof ItemFrame itemFrame)) {
-            System.out.println("Entity is not an item frame.");
+//            System.out.println("Entity is not an item frame.");
             return;
         }
 
@@ -338,7 +338,7 @@ public class DroppedItems implements Listener {
 
         // If item frame is invisible, remove it.
         if (itemFrame.isVisible()) {
-            System.out.println("Item frame is visible.");
+//            System.out.println("Item frame is visible.");
             return;
         }
 
@@ -346,11 +346,11 @@ public class DroppedItems implements Listener {
         if (itemType != Material.WRITABLE_BOOK
             && itemType != Material.WRITTEN_BOOK
             && itemType != Material.BOOK) {
-            System.out.println("Item is not a writable book.");
+//            System.out.println("Item is not a writable book.");
             return;
         }
 
-        System.out.println("Item frame was removed.");
+//        System.out.println("Item frame was removed.");
         // Drop the item in the item frame.
 //        itemFrame.getWorld().dropItemNaturally(itemFrame.getLocation(), item);
         itemFrame.remove();
@@ -361,7 +361,7 @@ public class DroppedItems implements Listener {
 
         var entity = event.getRightClicked();
         if (!(entity instanceof ItemFrame itemFrame)) {
-            System.out.println("Entity is not an item frame.");
+//            System.out.println("Entity is not an item frame.");
             return;
         }
 
@@ -370,41 +370,41 @@ public class DroppedItems implements Listener {
 
         // If item frame is visible, it's not one of ours.
         if (itemFrame.isVisible()) {
-            System.out.println("Item frame is visible.");
+//            System.out.println("Item frame is visible.");
             return;
         }
 
         // But only if the item is a book of some sort.
         if (itemType != Material.BOOK) {
-            System.out.println("Item is not a book.");
+//            System.out.println("Item is not a book.");
             return;
         }
 
         // Get the custom model data of the item in the item frame.
         var itemMeta = item.getItemMeta();
         if (itemMeta == null) {
-            System.out.println("Item in item frame has no item meta.");
+//            System.out.println("Item in item frame has no item meta.");
             return;
         }
 
         int customModelData = -1;
         boolean hasCustomModelData = itemMeta.hasCustomModelData();
         if (hasCustomModelData) {
-            System.out.println("Item in item frame has custom model data!");
+//            System.out.println("Item in item frame has custom model data!");
             customModelData = itemMeta.getCustomModelData();
-            System.out.println("And the custom model data is: " + customModelData);
+//            System.out.println("And the custom model data is: " + customModelData);
         } else { // DEBUG
-            System.out.println("Item in item frame has NO custom model data.");
+//            System.out.println("Item in item frame has NO custom model data.");
         }
 
         var rotation = itemFrame.getRotation();
         var nextCustomItemId = getNextCustomItemIdRotation(rotation, customModelData);
 
-        System.out.println("Next custom item id will be: " + nextCustomItemId);
+//        System.out.println("Next custom item id will be: " + nextCustomItemId);
 
         // If -100 is returned, we don't need to do anything, it's not final rotation.
         if (nextCustomItemId == -100) {
-            System.out.println("Next custom item id is -100.");
+//            System.out.println("Next custom item id is -100.");
             return;
         }
 
@@ -419,7 +419,7 @@ public class DroppedItems implements Listener {
         // Update the item in the item frame.
         itemFrame.setItem(item);
 
-        System.out.println("Item was rotated in the item frame successfully.");
+//        System.out.println("Item was rotated in the item frame successfully.");
     }
 
     private int getNextCustomItemIdRotation(Rotation rotation, int customModelData) {
@@ -487,7 +487,7 @@ public class DroppedItems implements Listener {
     @EventHandler public void onItemFrameDamage(EntityDamageByEntityEvent event) {
         var entity = event.getEntity();
         if (!(entity instanceof ItemFrame itemFrame)) {
-            System.out.println("Entity is not an item frame.");
+//            System.out.println("Entity is not an item frame.");
             return;
         }
 
@@ -496,13 +496,13 @@ public class DroppedItems implements Listener {
 
         // If item frame is visible, skip.
         if (itemFrame.isVisible()) {
-            System.out.println("Item frame is visible.");
+//            System.out.println("Item frame is visible.");
             return;
         }
 
         // Must be a book.
         if (itemType != Material.BOOK) {
-            System.out.println("Item is not a book.");
+//            System.out.println("Item is not a book.");
             return;
         }
 
