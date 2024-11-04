@@ -139,6 +139,7 @@
           <groupId>com.github.Septicuss</groupId>
           <artifactId>tooltips</artifactId>
           <version>1.8</version>
+          <scope>provided</scope>
       </dependency>
 
       <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
@@ -189,9 +190,9 @@
       <dependency>
           <groupId>net.advancedplugins.seasons.api</groupId>
           <artifactId>AdvancedSeasons</artifactId>
-          <version>AdvancedSeasons-1.3.14</version>
+          <version>AdvancedSeasons-API</version>
           <scope>system</scope>
-          <systemPath>${project.basedir}/libs/AdvancedSeasons-1.3.14.jar</systemPath>
+          <systemPath>${project.basedir}/libs/AdvancedSeasons-API.jar</systemPath>
       </dependency>
       <!-- Get from local .jar file -->
 
