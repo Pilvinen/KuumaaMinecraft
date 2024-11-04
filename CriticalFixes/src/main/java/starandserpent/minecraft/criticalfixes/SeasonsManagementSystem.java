@@ -17,13 +17,14 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Objects;
 
-import static net.advancedplugins.seasons.data.StorageHandler.getSeason;
+import net.advancedplugins.seasons.api.AdvancedSeasonsAPI;
 
 public class SeasonsManagementSystem implements Listener {
 
     private final JavaPlugin plugin;
     private Server server;
     final Repository<String, SeasonsData> repository;
+    private AdvancedSeasonsAPI api = new AdvancedSeasonsAPI();
 
     private BukkitTask snowRunnable;
 
@@ -116,7 +117,7 @@ public class SeasonsManagementSystem implements Listener {
         }
 
         // Check if it is winter from AdvancedSeasons API.
-        var season = getSeason(world.getName()).getName();
+        var season = api.getSeason(world);
         if (season.equals("Winter")) {
 //            System.out.println("SeasonsManagementSystem: Setting isWinter to true.");
             isWinter = true;

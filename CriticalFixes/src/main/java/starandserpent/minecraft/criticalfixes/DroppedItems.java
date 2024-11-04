@@ -58,7 +58,7 @@ public class DroppedItems implements Listener {
         // Check if item was dropped by a player.
         UUID itemDropper = item.getThrower();
         if (itemDropper == null) {
-            System.out.println("Item was not dropped by a player.");
+//            System.out.println("Item was not dropped by a player.");
             return;
         }
 

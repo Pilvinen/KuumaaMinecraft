@@ -1,5 +1,6 @@
 package starandserpent.minecraft.criticalfixes;
 
+import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -29,7 +30,16 @@ public class DoubleDoors implements Listener {
         }
 
         Block clickedBlock = event.getClickedBlock();
-        if (clickedBlock == null || !(clickedBlock.getBlockData() instanceof Door)) {
+        if (clickedBlock == null) {
+            return;
+        }
+
+        // Ignore iron doors. They shouldn't be openable by hand.
+        if (clickedBlock.getType() == Material.IRON_DOOR) {
+            return;
+        }
+
+        if (!(clickedBlock.getBlockData() instanceof Door)) {
             return;
         }
 

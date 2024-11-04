@@ -100,6 +100,8 @@ public final class CriticalFixes extends JavaPlugin {
         registerReturnBell();
         registerBarbedWire();
         registerDamageKnockbackFix();
+        registerBetterTNT();
+        registerMobCheck();
     }
 
     private void showVersionNumber() {
@@ -502,6 +504,18 @@ public final class CriticalFixes extends JavaPlugin {
         System.out.println("CriticalFixes: Loading DamageKnockbackFix.");
         var damageKnockbackFix = new DamageKnockbackFix(this);
         pluginManager.registerEvents(damageKnockbackFix, this);
+    }
+
+    private void registerBetterTNT() {
+        System.out.println("CriticalFixes: Loading BetterTNT.");
+        var betterTNT = new BetterTNT(this);
+        pluginManager.registerEvents(betterTNT, this);
+    }
+
+    private void registerMobCheck() {
+        System.out.println("CriticalFixes: Loading MobCheck.");
+        var mobCheck = new MobCheck(this);
+        getCommand("mobcheck").setExecutor(mobCheck);
     }
 
 }

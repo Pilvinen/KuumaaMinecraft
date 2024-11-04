@@ -4,6 +4,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -12,9 +14,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class FallingBlocksFix implements Listener {
 
@@ -28,7 +29,6 @@ public class FallingBlocksFix implements Listener {
             Material.GRAVEL,
             Material.COBBLESTONE,
             Material.COBBLED_DEEPSLATE,
-            Material.SNOW,
             Material.SNOW_BLOCK,
             Material.POWDER_SNOW,
             Material.HAY_BLOCK,
@@ -135,7 +135,7 @@ public class FallingBlocksFix implements Listener {
     // On fall physics event
     @EventHandler public void onBlockUpdate(BlockPhysicsEvent event) {
         var block = event.getBlock();
-        var blocksAroundLocation = getBlocksAroundLocation(block, 2);
+        var blocksAroundLocation = getBlocksAroundLocation(block, 1); // was 2
         tryMakeBlocksFall(blocksAroundLocation);
     }
 
@@ -211,35 +211,38 @@ public class FallingBlocksFix implements Listener {
 
     // Try make block fall if it's a block with physics and has air under it. Take in a list of blocks.
     private void tryMakeBlocksFall(List<Block> blocks) {
+        Set<Block> checkedBlocks = new LinkedHashSet<>();
+
         for (Block block : blocks) {
             var blockType = block.getType();
-            var blockData = block.getBlockData();
             var location = block.getLocation();
             var blockBelow = location.clone().add(0, -1, 0).getBlock();
             var blockBelowType = blockBelow.getType();
 
-            // Can fall by physics.
+            if (materialsWithPhysics.contains(blockType)
+                    && materialsThatDoNotSupportBlocksWithPhysics.contains(blockBelowType)) {
 
-            if (materialsWithPhysics.contains(blockType) // Block has physics.
-                    && materialsThatDoNotSupportBlocksWithPhysics.contains(blockBelowType)) { // Block below is "air".
+                if (!checkedBlocks.add(block)) {
+                    continue; // Skip if the block has already been checked
+                }
 
-                // Small pause before continuing to next block without blocking the main thread.
-
-                // Delay with bukkitrunnable for 1 tick
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        // Set the block that we make fall to air, or we get dropped items.
                         block.setType(Material.AIR);
 
-                        // Small pause before continuing to next block without blocking the main thread.
-                        var fallingBlock = Objects.requireNonNull(location.getWorld()).spawnFallingBlock(location, blockData);
-                        fallingBlock.setHurtEntities(true);
-                        fallingBlock.setDamagePerBlock(4);
-                        fallingBlock.setDropItem(false);
+                        // Manually create and configure the FallingBlock entity
+                        var world = location.getWorld();
+                        if (world != null) {
+                            var fallingBlock = world.spawnFallingBlock(location, blockType.createBlockData());
+                            fallingBlock.setHurtEntities(true);
+                            fallingBlock.setDamagePerBlock(4);
+                            fallingBlock.setDropItem(false);
+                            //System.out.println("Spawned new FallingBlock entity at: " + location);
+                        }
+
                     }
                 }.runTaskLater(plugin, 1);
-
             }
         }
     }

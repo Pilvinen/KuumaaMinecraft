@@ -159,27 +159,27 @@ public class Emoticons implements Listener {
         }
 
         if (clickedInventory.getType() == InventoryType.PLAYER) {
-            System.out.println("Player inventory click event.");
+//            System.out.println("Player inventory click event.");
             if (event.getSlotType() == InventoryType.SlotType.ARMOR) {
-                System.out.println("Player armor slot click event.");
+//                System.out.println("Player armor slot click event.");
 
                 var cursor = event.getCurrentItem();
                 if (cursor == null) {
-                    System.out.println("Cursor is null.");
+//                    System.out.println("Cursor is null.");
                     return;
                 }
 
                 ItemMeta itemMeta = cursor.getItemMeta();
                 if (itemMeta == null) {
-                    System.out.println("Item meta is null.");
+//                    System.out.println("Item meta is null.");
                     return;
                 }
 
-                System.out.println("Item meta is not null: " + itemMeta.getDisplayName());
+//                System.out.println("Item meta is not null: " + itemMeta.getDisplayName());
 
 
                 if (isEyelids(cursor)) {
-                    System.out.println("Player armor slot click event. Eyelids found!!!");
+//                    System.out.println("Player armor slot click event. Eyelids found!!!");
                     event.setCurrentItem(new ItemStack(Material.AIR));
                 }
             }
