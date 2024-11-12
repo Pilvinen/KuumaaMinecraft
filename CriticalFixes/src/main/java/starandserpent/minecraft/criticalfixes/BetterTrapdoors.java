@@ -38,7 +38,7 @@ public class BetterTrapdoors implements Listener {
 
         System.out.println("CriticalFixes, BetterTrapdoors: Server shutting down. Doing database maintenance.");
 
-        var values = repository.streamAllValues().toArray();
+        Object[] values = repository.streamAllValues().toArray();
         int invalidEntriesCount = 0;
         for (var value : values) {
 
