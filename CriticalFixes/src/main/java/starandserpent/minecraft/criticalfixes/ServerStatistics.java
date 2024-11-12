@@ -38,21 +38,21 @@ public class ServerStatistics implements Listener, CommandExecutor {
         repositoryOfUniqueVisitors = NDatabase.api().getOrCreateRepository(UniqueVisitor.class);
 
         // Fetch the current ServerStatisticsData asynchronously
-        repository.getAsync(serverId)
-                .thenSync(serverStatisticsData -> {
-                    if (serverStatisticsData == null) {
-                        // If no data exists, create a new entry
-                        this.serverStatisticsData = new ServerStatisticsData(serverId);
-                    } else {
-                        this.serverStatisticsData = serverStatisticsData;
-                    }
+        ServerStatisticsData serverStatisticsData = repository.get(serverId);
 
-                    // Increment the restart count.
-                    this.serverStatisticsData.incrementRestartCount();
+        if (serverStatisticsData == null) {
+            // If no data exists, create a new entry
+            this.serverStatisticsData = new ServerStatisticsData(serverId);
+        } else {
+            this.serverStatisticsData = serverStatisticsData;
+        }
 
-                    // Update the ServerStatisticsData object in the repository
-                    repository.upsert(this.serverStatisticsData);
-                });
+        // Increment the restart count.
+        this.serverStatisticsData.incrementRestartCount();
+
+        // Update the ServerStatisticsData object in the repository
+        repository.upsert(this.serverStatisticsData);
+
     }
 
     @Override public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -149,18 +149,14 @@ public class ServerStatistics implements Listener, CommandExecutor {
         var playerUUID = player.getUniqueId().toString();
 
         // Check if the player has visited before.
-        repositoryOfUniqueVisitors.getAsync(playerUUID)
-                .thenSync(uniqueVisitor -> {
-                    if (uniqueVisitor == null) {
-                        // If the player is new, create a new entry.
-                        uniqueVisitor = new UniqueVisitor(playerUUID, playerUUID);
-                        repositoryOfUniqueVisitors.upsert(uniqueVisitor);
-                    }
-                }
-        );
+        var uniqueVisitor = repositoryOfUniqueVisitors.get(playerUUID);
+
+        if (uniqueVisitor == null) {
+            // If the player is new, create a new entry.
+            uniqueVisitor = new UniqueVisitor(playerUUID, playerUUID);
+            repositoryOfUniqueVisitors.upsert(uniqueVisitor);
+        }
 
     }
-
-
 
 }
