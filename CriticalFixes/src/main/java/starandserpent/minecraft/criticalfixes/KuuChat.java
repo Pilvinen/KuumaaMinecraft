@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
@@ -38,6 +39,9 @@ public class KuuChat implements Listener {
     private static HashMap<Player, Boolean> hatState = new HashMap<>();
     private HashMap<Player, ChatFaceCache> chatFaceCaches = new HashMap<>();
     private String steveFace = "";
+
+    // HashMap to store join timestamps.
+    private HashMap<UUID, Long> joinTimestamps = new HashMap<>();
 
     // HashMap of emojis and their type.
     private HashMap<String, Emotion> emojis = new HashMap<>() {{
@@ -138,10 +142,17 @@ public class KuuChat implements Listener {
     @EventHandler public void onPlayerJoin(PlayerJoinEvent event) {
         cacheChatFacesForPlayer(event);
 
+        // Set custom join message.
+        var chatTimestamp = new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date());
+        event.setJoinMessage(ChatColor.YELLOW + "[" + chatTimestamp + "] " + event.getPlayer().getName() + " saapui palvelimelle." + ChatColor.RESET);
+
         // Log join messages.
         var logTimestamp = new java.text.SimpleDateFormat("dd.MM.yyyy, HH:mm").format(new java.util.Date());
         var logMessage = String.format("[%s] %s liittyi palvelimelle.", logTimestamp, event.getPlayer().getName());
         log.info(logMessage);
+
+        // Store join timestamp.
+        joinTimestamps.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
     }
 
     // Get and cache hat and no hat faces for the player.
@@ -244,6 +255,21 @@ public class KuuChat implements Listener {
     @EventHandler public void onPlayerQuit(PlayerQuitEvent event) {
         chatFaceCaches.remove(event.getPlayer());
         hatState.remove(event.getPlayer());
+
+        // Retrieve and remove the join timestamp.
+        var joinTimestamp = joinTimestamps.get(event.getPlayer().getUniqueId());
+        joinTimestamps.remove(event.getPlayer().getUniqueId());
+
+        // Calculate the duration the player stayed on the server.
+        var durationMinutes = 0L;
+        if (joinTimestamp != null) {
+            var durationMillis = System.currentTimeMillis() - joinTimestamp;
+            durationMinutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis);
+        }
+
+        // Set custom join message.
+        var chatTimestamp = new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date());
+        event.setQuitMessage(ChatColor.YELLOW + "[" + chatTimestamp + "] " + event.getPlayer().getName() + " poistui palvelimelta pelattuaan " + durationMinutes + " min." + ChatColor.RESET);
 
         // Log leave messages.
         var logTimestamp = new java.text.SimpleDateFormat("dd.MM.yyyy, HH:mm").format(new java.util.Date());
