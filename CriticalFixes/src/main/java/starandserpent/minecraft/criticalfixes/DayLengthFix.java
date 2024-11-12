@@ -21,6 +21,9 @@ public class DayLengthFix implements Listener {
     private final JavaPlugin plugin;
     private Server server;
 
+    // Ignored worlds.
+    private final String[] ignoredWorlds = { "Tyhjyys" };
+
     // Previous known tick count.
     private long previousTickCount = 0;
 
@@ -57,9 +60,20 @@ public class DayLengthFix implements Listener {
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("Kello on " + timeOfDayString + "."));
     }
 
-    // Loop all worlds and advance time.
+    // Loop all worlds and advance time, skipping ignored worlds.
     private void advanceTimeForAllWorlds() {
-        server.getWorlds().forEach(world -> advanceTime(world.getName(), timeProgressPerStepInTicks));
+        server.getWorlds().forEach(world -> {
+            // Print world name.
+//            System.out.println("World: " + world.getName());
+            for (String ignoredWorld : ignoredWorlds) {
+                if (world.getName().equals(ignoredWorld)) {
+//                    System.out.println("Ignored world, skipping.");
+                    return;
+                }
+            }
+//            System.out.println("Advanding time for world: " + world.getName());
+            advanceTime(world.getName(), timeProgressPerStepInTicks);
+        });
     }
 
     // Get the current time of day for the world passed as parameter.
