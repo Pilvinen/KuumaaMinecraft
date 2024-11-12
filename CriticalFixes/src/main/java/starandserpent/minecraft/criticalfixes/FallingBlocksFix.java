@@ -4,8 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.FallingBlock;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -239,6 +237,16 @@ public class FallingBlocksFix implements Listener {
                             fallingBlock.setDamagePerBlock(4);
                             fallingBlock.setDropItem(false);
                             //System.out.println("Spawned new FallingBlock entity at: " + location);
+
+                            // Schedule task to remove the falling block after a delay
+                            new BukkitRunnable() {
+                                @Override
+                                public void run() {
+                                    if (fallingBlock.isValid()) {
+                                        fallingBlock.remove();
+                                    }
+                                }
+                            }.runTaskLater(plugin, 100); // Adjust the delay as needed
                         }
 
                     }
