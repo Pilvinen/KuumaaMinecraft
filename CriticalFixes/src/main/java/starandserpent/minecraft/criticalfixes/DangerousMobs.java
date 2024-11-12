@@ -2,14 +2,17 @@ package starandserpent.minecraft.criticalfixes;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Openable;
 import org.bukkit.entity.*;
+import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -17,6 +20,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -46,6 +50,11 @@ public class DangerousMobs implements Listener {
         EntityType.ZOGLIN
     );
 
+    // List of new hostile mobs.
+    private final List<EntityType> alwaysHostileMobs = List.of(
+        EntityType.POLAR_BEAR
+    );
+
     // List of all carpets.
     private final List<Material> carpets = List.of(
         Material.WHITE_CARPET,
@@ -73,6 +82,9 @@ public class DangerousMobs implements Listener {
         this.plugin = plugin;
         this.server = plugin.getServer();
     }
+
+
+
 
     // On mob targeting player event
     @EventHandler public void onMobTargetingPlayer(EntityTargetLivingEntityEvent event) {
@@ -266,7 +278,7 @@ public class DangerousMobs implements Listener {
         return blocks;
     }
 
-    // On mob spawn tune up the enemies, make them better and stronger and more resilient.
+
     @EventHandler public void onMobSpawnEvent(CreatureSpawnEvent event) {
         var entity = event.getEntity();
         var entityType = entity.getType();
@@ -281,6 +293,45 @@ public class DangerousMobs implements Listener {
             // Can always pick up items.
             zombie.setCanPickupItems(true);
         }
+
+        if (!alwaysHostileMobs.contains(entityType)) {
+            return;
+        }
+
+        BukkitTask[] task = new BukkitTask[1];
+        task[0] = entity.getServer().getScheduler().runTaskTimer(plugin, () -> {
+
+            if (!entity.isValid()) {
+                // Cancel the task if the entity is no longer valid.
+                entity.getServer().getScheduler().cancelTask(task[0].getTaskId());
+                return;
+            }
+
+            // Find the nearest player except if the player is in creative mode.
+            Player nearestPlayer = entity.getNearbyEntities(5, 5, 5).stream()
+                    .filter(someEntity -> someEntity instanceof Player && ((Player) someEntity).getGameMode() != GameMode.CREATIVE)
+                    .map(someEntity -> (Player) someEntity)
+                    .min(Comparator.comparingDouble(player -> player.getLocation().distance(entity.getLocation())))
+                    .orElse(null);
+
+            if (nearestPlayer == null) {
+                return;
+            }
+
+            // Schedule a task to apply damage after a short delay (e.g., 2 seconds) to make it angry.
+            // Apply damage to the mob and set the damage source to the nearest player.
+//                    entity.damage(0, nearestPlayer);
+            // Set target to player
+            ((Mob) entity).setTarget(nearestPlayer);
+            // Set memory key for the mob.
+            entity.setMemory(MemoryKey.UNIVERSAL_ANGER, true);
+            // Set anger time to 2000 seconds.
+            entity.setMemory(MemoryKey.ANGRY_AT, nearestPlayer.getUniqueId());
+
+            // Set AngerTime NBT tag to 2000 ticks.
+            entity.getPersistentDataContainer().set(new NamespacedKey(plugin, "AngerTime"), PersistentDataType.INTEGER, 20000);
+
+        }, 0L, 40L); // Run task every 40 ticks (2 second)
     }
 
     // Throw the players a bone and kill the mobs around their spawn point.
