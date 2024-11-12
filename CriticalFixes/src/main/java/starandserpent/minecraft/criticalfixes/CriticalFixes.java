@@ -102,6 +102,7 @@ public final class CriticalFixes extends JavaPlugin {
         registerDamageKnockbackFix();
         registerBetterTNT();
         registerMobCheck();
+        registerPlayerTracker();
     }
 
     private void showVersionNumber() {
@@ -516,6 +517,20 @@ public final class CriticalFixes extends JavaPlugin {
         System.out.println("CriticalFixes: Loading MobCheck.");
         var mobCheck = new MobCheck(this);
         getCommand("mobcheck").setExecutor(mobCheck);
+    }
+
+    private void registerPlayerTracker() {
+        System.out.println("CriticalFixes: Loading PlayerTracker.");
+        var playerTracker = new PlayerTracker(this);
+        pluginManager.registerEvents(playerTracker, this);
+
+        getCommand("pelaajat").setExecutor(playerTracker);
+        getCommand("players").setExecutor(playerTracker);
+        getCommand("top10").setExecutor(playerTracker);
+        getCommand("pelaaja").setExecutor(playerTracker);
+        getCommand("player").setExecutor(playerTracker);
+        getCommand("seen").setExecutor(playerTracker);
+        getCommand("missä").setExecutor(playerTracker);
     }
 
 }

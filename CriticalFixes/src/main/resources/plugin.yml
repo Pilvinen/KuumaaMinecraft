@@ -5,6 +5,27 @@ api-version: '1.20'
 depend: [ ProtocolLib, NDatabase ]
 softdepend: [ Tooltips ]
 commands:
+  pelaajat:
+    description: Pelaajatilastoja.
+    usage: /pelaajat
+  players:
+    description: Player statistics.
+    usage: /players
+  top10:
+    description: Player statistics.
+    usage: /top10
+  player:
+    description: Player information.
+    usage: /player <playerName>
+  seen:
+    description: Player information.
+    usage: /seen <playerName>
+  pelaaja:
+    description: Pelaajan tietoja.
+    usage: /pelaaja <pelaajan nimi>
+  missä:
+    description: Pelaajan tietoja.
+    usage: /missä <pelaajan nimi>
   mobcheck:
     description: Check the number of mobs in the world
     usage: /mobcheck
