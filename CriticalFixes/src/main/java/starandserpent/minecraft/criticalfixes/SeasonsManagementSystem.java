@@ -2,6 +2,7 @@ package starandserpent.minecraft.criticalfixes;
 
 import com.nivixx.ndatabase.api.NDatabase;
 import com.nivixx.ndatabase.api.repository.Repository;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -80,8 +81,9 @@ public class SeasonsManagementSystem implements Listener {
 
                         // Schedule the command dispatching to be run on the main server thread
                         plugin.getServer().getScheduler().runTask(plugin, () -> {
-                            server.dispatchCommand(new SilentCommandSender(), "seasons nextseason Kuumaa");
+                            server.dispatchCommand(Bukkit.getConsoleSender(), "seasons nextseason Kuumaa");
                         });
+
                     }
 
                     // Update the database entry.
