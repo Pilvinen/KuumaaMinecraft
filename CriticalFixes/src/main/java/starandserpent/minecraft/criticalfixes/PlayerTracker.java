@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class PlayerTracker implements Listener, CommandExecutor {
+public class PlayerTracker implements Listener, CommandExecutor, PlayerLogoutListener {
     private final JavaPlugin plugin;
     private Server server;
     Repository<String, PlayerTrackerData> repository;
@@ -143,7 +143,9 @@ public class PlayerTracker implements Listener, CommandExecutor {
             if (playerName == null || playerName.isEmpty()) {
                 playerName = "Tuntematon";
             }
-            messageLines.add(position + ". " + playerName + ", " + player.playtimeMinutes + " min, " + player.visits + " vierailua.");
+            // Get player UUID from name string.
+            UUID playerId = UUID.fromString(player.getKey());
+            messageLines.add(position + ". " + playerName + ", " + player.playtimeMinutes + " min, " + player.visits + " vierailua, " + PlayerIdleTracker.getTotalIdleTimeForAllTimeInMinutes(playerId) + " min idle.");
             position++;
         }
 
@@ -158,22 +160,28 @@ public class PlayerTracker implements Listener, CommandExecutor {
 
         // Iterate through the currently online players.
         for (var player : server.getOnlinePlayers()) {
-            String playerUUID = player.getUniqueId().toString();
-            PlayerTrackerData playerData = repository.get(playerUUID);
+            UUID playerUUID = player.getUniqueId();
+            PlayerTrackerData playerData = repository.get(playerUUID.toString());
 
             if (playerData == null) {
-                playerData = new PlayerTrackerData(playerUUID);
+                playerData = new PlayerTrackerData(playerUUID.toString());
             }
 
             // Calculate the playtime for the current session.
-            Date loginTime = playerLoginTimes.get(playerUUID);
+            Date loginTime = playerLoginTimes.get(playerUUID.toString());
             long currentSessionPlaytime = (new Date().getTime() - loginTime.getTime()) / 1000 / 60; // Convert milliseconds to minutes.
+
+            // Get the cumulative idle time for current session from PlayerIdleTracker.
+            long totalIdleTime = PlayerIdleTracker.getTotalIdleTimeForPlaySession(playerUUID) / 1000 / 60; // Convert milliseconds to minutes.
+
+            // Subtract the playtime by the total idle time.
+            currentSessionPlaytime -= totalIdleTime;
 
             // Add the current session playtime to the total playtime.
             playerData.playtimeMinutes += currentSessionPlaytime;
 
             // Add to the combined data map.
-            combinedData.put(playerUUID, playerData);
+            combinedData.put(playerUUID.toString(), playerData);
         }
 
         // Add the playtime data from the database for players who are not online.
@@ -212,11 +220,20 @@ public class PlayerTracker implements Listener, CommandExecutor {
         }
 
         // Calculate the playtime for the current session if the player is online.
-        if (server.getPlayer(playerUUID) != null) {
-            Date loginTime = playerLoginTimes.get(playerUUID);
-            long currentSessionPlaytime = (new Date().getTime() - loginTime.getTime()) / 1000 / 60; // Convert milliseconds to minutes.
-            playerTrackerData.playtimeMinutes += currentSessionPlaytime;
-        }
+//        if (server.getPlayer(playerUUID) != null) {
+//            Date loginTime = playerLoginTimes.get(playerUUID);
+//            long currentSessionPlaytime = (new Date().getTime() - loginTime.getTime()) / 1000 / 60; // Convert milliseconds to minutes.
+
+            // Get the cumulative idle time for current session from PlayerIdleTracker.
+//            long totalIdleTime = PlayerIdleTracker.getTotalIdleTimeForPlaySession(playerUUIDGuid) / 1000 / 60; // Convert milliseconds to minutes.
+
+            // Subtract the playtime by the total idle time.
+//            currentSessionPlaytime -= totalIdleTime;
+
+//            playerTrackerData.playtimeMinutes += currentSessionPlaytime;
+
+//            repository.upsert(playerTrackerData);
+//        }
 
         // Create a map to store the combined playtime data.
         Map<String, PlayerTrackerData> combinedData = new HashMap<>();
@@ -234,6 +251,12 @@ public class PlayerTracker implements Listener, CommandExecutor {
             Date loginTime = playerLoginTimes.get(onlinePlayerUUID);
             long currentSessionPlaytime = (new Date().getTime() - loginTime.getTime()) / 1000 / 60; // Convert milliseconds to minutes.
 
+            // Get the cumulative idle time for current session from PlayerIdleTracker.
+            long totalIdleTime = PlayerIdleTracker.getTotalIdleTimeForPlaySession(player.getUniqueId()) / 1000 / 60; // Convert milliseconds to minutes.
+
+            // Subtract the playtime by the total idle time.
+            currentSessionPlaytime -= totalIdleTime;
+
             // Add the current session playtime to the total playtime.
             onlinePlayerData.playtimeMinutes += currentSessionPlaytime;
 
@@ -249,7 +272,7 @@ public class PlayerTracker implements Listener, CommandExecutor {
         });
 
         // Calculate the player's rank based on the combined playtime data.
-        long playerPlaytime = playerTrackerData.playtimeMinutes;
+        long playerPlaytime = combinedData.get(playerUUID).playtimeMinutes;
         long rank = combinedData.values().stream()
                 .filter(data -> data.playtimeMinutes > playerPlaytime)
                 .count() + 1;
@@ -265,7 +288,15 @@ public class PlayerTracker implements Listener, CommandExecutor {
         }
 
         if (isOnlineNow) {
-            messageLines.add(playerName + " on parhaillaan palvelimella.");
+            // Check idle state from PlayerIdleTracker.
+            boolean isIdle = PlayerIdleTracker.isPlayerIdle(playerUUIDGuid);
+            if (isIdle) {
+                long currentIdleSessionTime = PlayerIdleTracker.getCurrentIdleSessionLengthInMinutes(playerUUIDGuid);
+                messageLines.add(playerName + " idlaa (" + currentIdleSessionTime + " min).");
+            } else {
+                messageLines.add(playerName + " on paikalla.");
+            }
+
             // Otherwise show the last seen time.
         } else if (playerTrackerData.lastSeen == null) {
             messageLines.add(playerName + " ei ole koskaan käynyt palvelimella.");
@@ -286,16 +317,40 @@ public class PlayerTracker implements Listener, CommandExecutor {
         }
 
         // Send the player statistics to the sender.
-        messageLines.add(playerName + " on sijalla " + rank + ". " + playerTrackerData.playtimeMinutes + " min, " + playerTrackerData.visits + " vierailua.");
+        messageLines.add(playerName + " on sijalla " + rank + ". " + combinedData.get(playerUUID).playtimeMinutes + " min, " + playerTrackerData.visits + " vierailua, " + PlayerIdleTracker.getTotalIdleTimeForAllTimeInMinutes(playerUUIDGuid) + " min idle.");
         // Print average playtime per visits.
         if (playerTrackerData.visits > 0) {
-            long averagePlaytimePerVisit = playerTrackerData.playtimeMinutes / playerTrackerData.visits;
-            messageLines.add(playerName + " pelaa ~" + averagePlaytimePerVisit + " min/vierailu.");
+            long averagePlaytimePerVisit = playerPlaytime / playerTrackerData.visits;
+            messageLines.add(playerName + " pelaa ~" + averagePlaytimePerVisit + " min / vierailu.");
         }
 
         // Convert the list to an array and call privateBroadcast.
         String[] messageArray = messageLines.toArray(new String[0]);
         SystemNotifications.privateBroadcast(server, sender, messageArray);
+    }
+
+    @Override
+    public void onPlayerLogout(PlayerLogoutEvent event) {
+        Player player = event.getPlayer();
+        long totalIdleTime = event.getTotalIdleTime();
+        // Handle the event (e.g., update statistics, subtract idle time from online time)
+
+        // Get the player UUID.
+        String playerUUID = player.getUniqueId().toString();
+
+        // Get the player tracker data.
+        PlayerTrackerData playerTrackerData = repository.get(playerUUID);
+
+        // If the player tracker data does not exist, create it.
+        if (playerTrackerData == null) {
+            playerTrackerData = new PlayerTrackerData(playerUUID);
+        }
+
+        // Subtract the playtime by the total idle time.
+        playerTrackerData.playtimeMinutes -= totalIdleTime / 1000 / 60; // Convert milliseconds to minutes.
+
+        // Save the player tracker data.
+        repository.upsert(playerTrackerData);
     }
 
 }

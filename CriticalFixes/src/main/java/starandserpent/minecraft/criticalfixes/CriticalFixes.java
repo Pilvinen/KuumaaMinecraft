@@ -103,6 +103,7 @@ public final class CriticalFixes extends JavaPlugin {
         registerBetterTNT();
         registerMobCheck();
         registerPlayerTracker();
+        registerPlayerIdleTracker();
     }
 
     private void showVersionNumber() {
@@ -531,6 +532,12 @@ public final class CriticalFixes extends JavaPlugin {
         getCommand("player").setExecutor(playerTracker);
         getCommand("seen").setExecutor(playerTracker);
         getCommand("missä").setExecutor(playerTracker);
+    }
+
+    private void registerPlayerIdleTracker() {
+        System.out.println("CriticalFixes: Loading PlayerIdleTracker.");
+        var playerIdleTracker = new PlayerIdleTracker(this);
+        pluginManager.registerEvents(playerIdleTracker, this);
     }
 
 }
