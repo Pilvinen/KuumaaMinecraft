@@ -104,6 +104,7 @@ public final class CriticalFixes extends JavaPlugin {
         registerMobCheck();
         registerPlayerTracker();
         registerPlayerIdleTracker();
+        registerBetterRestartServer();
     }
 
     private void showVersionNumber() {
@@ -538,6 +539,13 @@ public final class CriticalFixes extends JavaPlugin {
         System.out.println("CriticalFixes: Loading PlayerIdleTracker.");
         var playerIdleTracker = new PlayerIdleTracker(this);
         pluginManager.registerEvents(playerIdleTracker, this);
+    }
+
+    private void registerBetterRestartServer() {
+        System.out.println("CriticalFixes: Loading BetterRestartServer.");
+        var betterRestartServer = new BetterRestartServer(this);
+
+        getCommand("ukk").setExecutor(betterRestartServer);
     }
 
 }
