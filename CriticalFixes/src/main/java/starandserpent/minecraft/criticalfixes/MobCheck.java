@@ -6,35 +6,26 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.FallingBlock;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-// This is a plugin which adds commands to the game for setting warp locations and stores them
-// on the disc as yaml files. The plugin also adds a command to teleport to the warp location.
 public class MobCheck implements CommandExecutor {
 
     private final JavaPlugin plugin;
     private Server server;
 
     public MobCheck(JavaPlugin plugin) {
-
         this.plugin = plugin;
-
-        // Get server.
-        server = plugin.getServer();
+        this.server = plugin.getServer();
     }
 
-    // Minecraft command to check amount of spawned mobs
-    // The command is /checkmobs
-    @Override public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
-        // Check for permissions.
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof ConsoleCommandSender)) {
             if (!sender.isOp()) {
                 sender.sendMessage("You need to be OP to use this command.");
@@ -42,7 +33,6 @@ public class MobCheck implements CommandExecutor {
             }
         }
 
-        // /checkmobs
         if (command.getName().equalsIgnoreCase("mobcheck")) {
             return checkMobs(sender, command, label, args);
         }
@@ -51,34 +41,43 @@ public class MobCheck implements CommandExecutor {
     }
 
     private boolean checkMobs(CommandSender sender, Command command, String label, String[] args) {
-
-        // Tried to pass arguments to the command.
         if (args.length != 0) {
-            // Send usage information.
             sender.sendMessage("Usage: /mobcheck");
             return false;
         }
 
-        // Get the amount of mobs on the whole server for "Kuumaa" world.
         String kuumaaString = "Kuumaa";
         World kuumaaWorld = server.getWorld(kuumaaString);
-        int mobCountKuumaa = kuumaaWorld.getEntities().size();
-        // Get the amount of falling blocks.
-        int fallingBlockCountKuumaa = kuumaaWorld.getEntitiesByClass(FallingBlock.class).size();
+        Map<EntityType, Integer> entityCountKuumaa = countEntities(kuumaaWorld);
 
         String kuumaaNetherString = "Kuumaa_nether";
         World kuumaaNetherWorld = server.getWorld(kuumaaNetherString);
-        int mobCountKuumaaNether = kuumaaNetherWorld.getEntities().size();
-        // Get the amount of falling blocks.
-        int fallingBlockCountKuumaaNether = kuumaaNetherWorld.getEntitiesByClass(FallingBlock.class).size();
+        Map<EntityType, Integer> entityCountKuumaaNether = countEntities(kuumaaNetherWorld);
 
-        // Print the amount of mobs on the whole server.
-        sender.sendMessage("Amount of entities in world " + kuumaaString + ": " + mobCountKuumaa);
-        sender.sendMessage("Amount of falling blocks in world " + kuumaaString + ": " + fallingBlockCountKuumaa);
-        sender.sendMessage("Amount of entities in world " + kuumaaNetherString + ": " + mobCountKuumaaNether);
-        sender.sendMessage("Amount of falling blocks in world " + kuumaaNetherString + ": " + fallingBlockCountKuumaaNether);
+        sender.sendMessage("Entities in world " + kuumaaString + ":");
+        entityCountKuumaa.entrySet().stream()
+                .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+                .forEach(entry -> sender.sendMessage(formatEntityName(entry.getKey()) + ": " + entry.getValue()));
+
+        sender.sendMessage("Entities in world " + kuumaaNetherString + ":");
+        entityCountKuumaaNether.entrySet().stream()
+                .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+                .forEach(entry -> sender.sendMessage(formatEntityName(entry.getKey()) + ": " + entry.getValue()));
 
         return true;
     }
 
+    private Map<EntityType, Integer> countEntities(World world) {
+        Map<EntityType, Integer> entityCount = new HashMap<>();
+        for (Entity entity : world.getEntities()) {
+            EntityType type = entity.getType();
+            entityCount.put(type, entityCount.getOrDefault(type, 0) + 1);
+        }
+        return entityCount;
+    }
+
+    private String formatEntityName(EntityType type) {
+        String name = type.name().toLowerCase().replace('_', ' ');
+        return Character.toUpperCase(name.charAt(0)) + name.substring(1);
+    }
 }
