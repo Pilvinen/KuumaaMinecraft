@@ -144,7 +144,7 @@ public class KuuChat implements Listener {
 
         // Set custom join message.
         var chatTimestamp = new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date());
-        event.setJoinMessage(ChatColor.YELLOW + "[" + chatTimestamp + "] " + event.getPlayer().getName() + " saapui palvelimelle." + ChatColor.RESET);
+        event.setJoinMessage(ChatColor.YELLOW + "[" + chatTimestamp + "] Ilo ja riemu, " + event.getPlayer().getName() + " saapui palvelimelle." + ChatColor.RESET);
 
         // Log join messages.
         var logTimestamp = new java.text.SimpleDateFormat("dd.MM.yyyy, HH:mm").format(new java.util.Date());
@@ -269,7 +269,7 @@ public class KuuChat implements Listener {
 
         // Set custom join message.
         var chatTimestamp = new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date());
-        event.setQuitMessage(ChatColor.YELLOW + "[" + chatTimestamp + "] " + event.getPlayer().getName() + " poistui palvelimelta pelattuaan " + durationMinutes + " min." + ChatColor.RESET);
+        event.setQuitMessage(ChatColor.YELLOW + "[" + chatTimestamp + "] " + event.getPlayer().getName() + " murtui henkisesti pelattuaan " + durationMinutes + " min." + ChatColor.RESET);
 
         // Log leave messages.
         var logTimestamp = new java.text.SimpleDateFormat("dd.MM.yyyy, HH:mm").format(new java.util.Date());
