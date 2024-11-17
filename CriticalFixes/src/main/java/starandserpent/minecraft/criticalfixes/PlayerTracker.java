@@ -83,9 +83,13 @@ public class PlayerTracker implements Listener, CommandExecutor, PlayerLogoutLis
         // Calculate the playtime in minutes for current session.
         Date loginTime = playerLoginTimes.get(playerUUID);
         Date logoutTime = new Date();
-        long playtime = (logoutTime.getTime() - loginTime.getTime()) / 1000 / 60; // Convert milliseconds to minutes.
+        long playtimeForSession = (logoutTime.getTime() - loginTime.getTime()) / 1000 / 60; // Convert milliseconds to minutes.
+
+        // Decrement the total idle time from the playtime.
+        long totalIdleTimeForSession = PlayerIdleTracker.getTotalIdleTimeForPlaySession(event.getPlayer().getUniqueId()) / 1000 / 60; // Convert milliseconds to minutes.
+
         // Increment the playtime.
-        playerTrackerData.playtimeMinutes += playtime;
+        playerTrackerData.playtimeMinutes += (playtimeForSession - totalIdleTimeForSession);
 
         // Save the player tracker data.
         repository.upsert(playerTrackerData);
@@ -134,8 +138,11 @@ public class PlayerTracker implements Listener, CommandExecutor, PlayerLogoutLis
         List<String> messageLines = new ArrayList<>();
 
         // Send the top players to the sender.
-        messageLines.add("Top " + topPlayers.length + " kovimmat pelaajat peliajan mukaan:");
+        messageLines.add("Top " + topPlayers.length + " kovimmat pelaajat peliajan mukaan.");
+        messageLines.add("Sija | Nimi     | Aika      | Idle     | Käynnit");
 
+        String doublePositions = " ";
+        String singlePositions = "  ";
         int position = 1;
         for (PlayerTrackerData player : topPlayers) {
             // Get player name from UUID.
@@ -145,7 +152,14 @@ public class PlayerTracker implements Listener, CommandExecutor, PlayerLogoutLis
             }
             // Get player UUID from name string.
             UUID playerId = UUID.fromString(player.getKey());
-            messageLines.add(position + ". " + playerName + ", " + player.playtimeMinutes + " min, " + player.visits + " vierailua, " + PlayerIdleTracker.getTotalIdleTimeForAllTimeInMinutes(playerId) + " min idle.");
+
+            // Convert playtime and idle time to hours and minutes.
+            String playtime = formatTime(player.playtimeMinutes);
+            String idleTime = formatTime(PlayerIdleTracker.getTotalIdleTimeForAllTimeInMinutes(playerId));
+
+            String positionString = position < 10 ? singlePositions : doublePositions;
+
+            messageLines.add("#" + position + "." + positionString + "| " + playerName + " | " + playtime + " | " + idleTime + " | " + player.visits + ".");
             position++;
         }
 
@@ -198,6 +212,12 @@ public class PlayerTracker implements Listener, CommandExecutor, PlayerLogoutLis
                 .toArray(PlayerTrackerData[]::new);
     }
 
+    private String formatTime(long totalMinutes) {
+        long days = totalMinutes / (60 * 24);
+        long hours = (totalMinutes % (60 * 24)) / 60;
+        long minutes = totalMinutes % 60;
+        return days + "p" + hours + "t" + minutes + "m";
+    }
 
     private void showSinglePlayerStatistics(@NotNull CommandSender sender, @NotNull String arg) {
         // Get the player UUID.
@@ -218,22 +238,6 @@ public class PlayerTracker implements Listener, CommandExecutor, PlayerLogoutLis
             sender.sendMessage("Pelaajaa ei löytynyt.");
             return;
         }
-
-        // Calculate the playtime for the current session if the player is online.
-//        if (server.getPlayer(playerUUID) != null) {
-//            Date loginTime = playerLoginTimes.get(playerUUID);
-//            long currentSessionPlaytime = (new Date().getTime() - loginTime.getTime()) / 1000 / 60; // Convert milliseconds to minutes.
-
-            // Get the cumulative idle time for current session from PlayerIdleTracker.
-//            long totalIdleTime = PlayerIdleTracker.getTotalIdleTimeForPlaySession(playerUUIDGuid) / 1000 / 60; // Convert milliseconds to minutes.
-
-            // Subtract the playtime by the total idle time.
-//            currentSessionPlaytime -= totalIdleTime;
-
-//            playerTrackerData.playtimeMinutes += currentSessionPlaytime;
-
-//            repository.upsert(playerTrackerData);
-//        }
 
         // Create a map to store the combined playtime data.
         Map<String, PlayerTrackerData> combinedData = new HashMap<>();
@@ -317,11 +321,16 @@ public class PlayerTracker implements Listener, CommandExecutor, PlayerLogoutLis
         }
 
         // Send the player statistics to the sender.
-        messageLines.add(playerName + " on sijalla " + rank + ". " + combinedData.get(playerUUID).playtimeMinutes + " min, " + playerTrackerData.visits + " vierailua, " + PlayerIdleTracker.getTotalIdleTimeForAllTimeInMinutes(playerUUIDGuid) + " min idle.");
+        String playtime = formatTime(combinedData.get(playerUUID).playtimeMinutes);
+        String idleTime = formatTime(PlayerIdleTracker.getTotalIdleTimeForAllTimeInMinutes(playerUUIDGuid));
+        messageLines.add(playerName + " on peliaikatilastoissa sijalla #" + rank + ".");
+        messageLines.add("Peliaika: " + playtime + ", idleaika: " + idleTime + ".");
+        messageLines.add(playerName + " on käynyt Kuumaassa " + playerTrackerData.visits + " kertaa.");
+
         // Print average playtime per visits.
         if (playerTrackerData.visits > 0) {
             long averagePlaytimePerVisit = playerPlaytime / playerTrackerData.visits;
-            messageLines.add(playerName + " pelaa ~" + averagePlaytimePerVisit + " min / vierailu.");
+            messageLines.add(playerName + " pelaa keskimäärin " + averagePlaytimePerVisit + " min per vierailu.");
         }
 
         // Convert the list to an array and call privateBroadcast.
