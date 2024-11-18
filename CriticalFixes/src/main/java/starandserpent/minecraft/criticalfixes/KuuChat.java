@@ -101,6 +101,72 @@ public class KuuChat implements Listener {
         put("=I", Emotion.SERIOUS);
     }};
 
+    // List of join messages.
+    private String[] randomJoinMessages = {
+            "Ilo ja riemu,",
+            "Ystävämme",
+            "Jippii, se on",
+            "Vihdoinkin,",
+            "Kaikkien kaveri,",
+            "No mutta,",
+            "Ilon päivä,",
+            "Voi tavatonta,",
+            "Hyvänen aika,",
+            "Täysin odottamatta,",
+            "Kuin tähdistä pudoten,",
+            "Tänään on se päivä,",
+            "Äkkiarvaamatta,",
+            "Mutta sitten",
+            "Katsokaa,",
+            "Aivan erityinen",
+            "Mahtavaa!",
+            "Horjuvin askelin,",
+            "Kuin tuulenvire,",
+            "Epäröimättä,",
+            "Höh,",
+            "Hahaa,",
+            "Mitä?",
+            "Eikä!",
+            "Pakko uskoa,",
+            "Kenenkään pakottamatta,",
+            "Ovi rämähti auki,",
+            "Mitä nyt taas?",
+            "\"Minulla ei ole peliongelmaa\"",
+    };
+
+    // List of leave messages.
+    private String[] leaveMessages = {
+            "murtui henkisesti",
+            "antoi periksi",
+            "kadotti mielenkiinnon",
+            "päätti jatkaa myöhemmin",
+            "katosi mystisesti",
+            "kyllästyi hommaan",
+            "häipyi yllättäen",
+            "jätti pelin kesken",
+            "luovutti tyylillä",
+            "ei kestänyt enää",
+            "valitsi elämän",
+            "katsoi viisaaksi lopettaa",
+            "vetäytyi takavasemmalle",
+            "lähti muille maille",
+            "poistui vähin äänin",
+            "teki näyttävän lähdön",
+            "joutui kiireisiin",
+            "päätti ottaa tauon",
+            "jätti kentän muille",
+            "lähti katkolle",
+            "löysi tärkeämpää tekemistä",
+            "päätti säästää hermojaan",
+            "päätti tehdä jotain muuta",
+            "häipyi voittajan elkein",
+            "päätti olla stressaamatta",
+            "vetäytyi rauhoittumaan",
+            "sai tarpeekseen",
+            "poistui arvokkaasti",
+            "siirtyi muihin haasteisiin",
+    };
+
 //    private String testFace = "IzQ1MTIwMCMyZTBhMDAjMmUwYTAwIzFmMDQwMCMyZTBhMDAjMmUwYTAwIzQ1MTIwMCM1OTFiMDAjMmUwYTAwIzJlMGEwMCMxZjA0MDAjY2E4NTYwIzJlMGEwMCMxZjA0MDAjMmUwYTAwIzQ1MTIwMCMxZjA0MDAjZTBhMzczI2U4Yjc4MyNlMGEzNzMjMmUwYTAwIzJlMGEwMCMyZTBhMDAjMmUwYTAwIzJlMGEwMCNmZmZlZmUjMGYwMjAwI2UwYTM3MyNmMmNiOTkjMGYwMjAwIzBmMDIwMCMxZjA0MDAjZThiNzgzI2ZmZmVmZSMyZDViNjYjZjJjYjk5I2YyY2I5OSMyZDViNjYjZmZmZmZmI2U4Yjc4MyNlMGEzNzMjZThiNzgzI2YyY2I5OSNmMmNiOTkjZmFkYmFhI2YyY2I5OSNlOGI3ODMjZTBhMzczIzJlMGEwMCNjYTg1NjAjZjJjYjk5IzZlNDEzNiM2NjNkMzIjZjJjYjk5I2NhODU2MCMyZTBhMDAjMWYwNDAwIzFmMDQwMCNlMGEzNzMjZjJjYjk5I2ZhZGJhYSNlMGEzNzMjMWYwNDAwIzFmMDQwMA==";
 //    private String testFace = "IzQ1MTIwMCMyRTBBMDAjMkUwQTAwIzFGMDQwMCMyRTBBMDAjMkUwQTAwIzQ1MTIwMCM1OTFCMDAjMkUwQTAwIzJFMEEwMCMxRjA0MDAjQ0E4NTYwIzJFMEEwMCMxRjA0MDAjMkUwQTAwIzQ1MTIwMCMxRjA0MDAjRTBBMzczI0U4Qjc4MyNFMEEzNzMjMkUwQTAwIzJFMEEwMCMyRTBBMDAjMkUwQTAwIzJFMEEwMCNGRkZFRkUjMEYwMjAwI0UwQTM3MyNGMkNCOTkjMEYwMjAwIzBGMDIwMCMxRjA0MDAjRThCNzgzI0ZGRkVGRSMyRDVCNjYjRjJDQjk5I0YyQ0I5OSMyRDVCNjYjRkZGRkZGI0U4Qjc4MyNFMEEzNzMjNjYzRDMyI0YyQ0I5OSNGMkNCOTkjRkFEQkFBI0YyQ0I5OSM2NjNEMzIjRTBBMzczIzJFMEEwMCNDQTg1NjAjNjYzRDMyIzZFNDEzNiM2NjNEMzIjNjYzRDMyI0NBODU2MCMyRTBBMDAjMUYwNDAwIzFGMDQwMCNFMEEzNzMjRjJDQjk5I0ZBREJBQSNFMEEzNzMjMUYwNDAwIzFGMDQwMA==";
 
@@ -148,7 +214,8 @@ public class KuuChat implements Listener {
 
         // Set custom join message.
         var chatTimestamp = new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date());
-        event.setJoinMessage(ChatColor.YELLOW + "[" + chatTimestamp + "] Ilo ja riemu, " + event.getPlayer().getName() + " saapui palvelimelle." + ChatColor.RESET);
+        var randomJoinMessage = randomJoinMessages[(int) (Math.random() * randomJoinMessages.length)];
+        event.setJoinMessage(ChatColor.YELLOW + "[" + chatTimestamp + "] " + randomJoinMessage + " " + event.getPlayer().getName() + " saapui palvelimelle." + ChatColor.RESET);
 
         // Log join messages.
         var logTimestamp = new java.text.SimpleDateFormat("dd.MM.yyyy, HH:mm").format(new java.util.Date());
@@ -273,7 +340,8 @@ public class KuuChat implements Listener {
 
         // Set custom join message.
         var chatTimestamp = new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date());
-        event.setQuitMessage(ChatColor.YELLOW + "[" + chatTimestamp + "] " + event.getPlayer().getName() + " murtui henkisesti pelattuaan " + durationMinutes + " min." + ChatColor.RESET);
+        var randomLeaveMessage = leaveMessages[(int) (Math.random() * leaveMessages.length)];
+        event.setQuitMessage(ChatColor.YELLOW + "[" + chatTimestamp + "] " + event.getPlayer().getName() + " " + randomLeaveMessage + " pelattuaan " + durationMinutes + " min." + ChatColor.RESET);
 
         // Log leave messages.
         var logTimestamp = new java.text.SimpleDateFormat("dd.MM.yyyy, HH:mm").format(new java.util.Date());
