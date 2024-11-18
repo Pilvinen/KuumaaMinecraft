@@ -1,5 +1,7 @@
 package starandserpent.minecraft.criticalfixes;
 
+import com.vdurmont.emoji.EmojiManager;
+import com.vdurmont.emoji.EmojiParser;
 import net.minso.chathead.API.ChatHeadAPI;
 import net.minso.chathead.API.SkinSource;
 import org.bukkit.ChatColor;
@@ -22,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class KuuChat implements Listener {
     private final JavaPlugin plugin;
@@ -32,9 +36,9 @@ public class KuuChat implements Listener {
     private Handler handler;
 
 
-    private ChatColor nameDefaultColor = ChatColor.WHITE;
-    private ChatColor nameHighlightColor = ChatColor.YELLOW;
-    private ChatColor resetColor = ChatColor.GRAY;
+    private ChatColor nameDefaultColor = org.bukkit.ChatColor.WHITE;
+    private ChatColor nameHighlightColor = org.bukkit.ChatColor.YELLOW;
+    private ChatColor resetColor = org.bukkit.ChatColor.GRAY;
     private ChatHeadAPI chatHeadAPI;
     private static HashMap<Player, Boolean> hatState = new HashMap<>();
     private HashMap<Player, ChatFaceCache> chatFaceCaches = new HashMap<>();
@@ -291,13 +295,23 @@ public class KuuChat implements Listener {
         handler.close();
     }
 
+    // Method to wrap emojis with colors
+    private static String formatEmojisWithColor(String input, org.bukkit.ChatColor colorPrefix, org.bukkit.ChatColor colorReset) {
+        // Replace emojis using EmojiParser
+        return EmojiParser.parseFromUnicode(input, emoji -> colorPrefix + emoji.getEmoji().getUnicode() + colorReset);
+    }
+
     // Cancel chat messages.
     @EventHandler public void onPlayerChat(AsyncPlayerChatEvent event) throws IOException {
         event.setCancelled(true);
 
-        var message = event.getMessage();
+        String message = event.getMessage();
 
-        tryToGetLastEmoji(event.getPlayer(), message);
+        // Replace all aliases with their emojis.
+        String parsedMessage = EmojiParser.parseToUnicode(message);
+        String replacedMessage = formatEmojisWithColor(parsedMessage, nameDefaultColor, resetColor);
+
+        tryToGetLastEmoji(event.getPlayer(), replacedMessage);
 
         // Add timestamp in format [dd.MM.yyy, HH:mm:].
         var logTimestamp = new java.text.SimpleDateFormat("dd.MM.yyyy, HH:mm").format(new java.util.Date());
@@ -327,19 +341,20 @@ public class KuuChat implements Listener {
         for (Player recipient : server.getOnlinePlayers()) {
 
             // Format the chat message nicer.
-            var formattedMessage = resetColor + message;
+//            var formattedMessage = nameDefaultColor + replacedMessage;
+            var formattedMessage = resetColor + replacedMessage;
 
-            var formattedPlayerName = nameDefaultColor + playerName + resetColor;
+            String formattedPlayerName = nameDefaultColor + playerName + resetColor;
 
             // Check if the player's name is mentioned in the message.
             var recipientName = recipient.getName();
-            boolean recipientIsMentioned = message.toLowerCase().contains(recipientName.toLowerCase());
+            boolean recipientIsMentioned = replacedMessage.toLowerCase().contains(recipientName.toLowerCase());
             if (recipientIsMentioned) {
                 // If the player's name is mentioned, highlight the sender's name for this recipient.
                 formattedPlayerName = nameHighlightColor + playerName + resetColor;
 
                 // Highlight all instances of the recipient's name in the message.
-                formattedMessage = highLightMentionsInMessage(message, recipientName);
+                formattedMessage = highLightMentionsInMessage(replacedMessage, recipientName);
 
                 // Play sound effect for the recipient.
                 recipient.playSound(recipient, "minecraft:block.note_block.bell", 0.8f, 1.0f);
@@ -351,7 +366,7 @@ public class KuuChat implements Listener {
             recipient.sendMessage(chatMessage);
 
             // Log message.
-            var logMessage = String.format("[%s] %s: %s", logTimestamp, playerName, message);
+            var logMessage = String.format("[%s] %s: %s", logTimestamp, playerName, replacedMessage);
             log.info(logMessage);
         }
 
