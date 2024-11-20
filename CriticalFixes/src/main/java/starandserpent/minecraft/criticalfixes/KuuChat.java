@@ -392,6 +392,7 @@ public class KuuChat implements Listener {
 
         // Set name to white.
         var player = event.getPlayer();
+        var playerUUID = player.getUniqueId();
         var playerName = player.getName();
 
         // Get chat head graphics.
@@ -418,6 +419,7 @@ public class KuuChat implements Listener {
             var recipientName = recipient.getName();
             boolean recipientIsMentioned = replacedMessage.toLowerCase().contains(recipientName.toLowerCase());
             if (recipientIsMentioned) {
+
                 // If the player's name is mentioned, highlight the sender's name for this recipient.
                 formattedPlayerName = nameHighlightColor + playerName + resetColor;
 
@@ -432,6 +434,20 @@ public class KuuChat implements Listener {
             var chatMessage = String.format("%s %s %s: %s", formattedTime, formattedPlayerHead, formattedPlayerName, formattedMessage);
 
             recipient.sendMessage(chatMessage);
+
+            // AFK handling.
+            if (recipientIsMentioned) {
+                boolean recipientIsAFK = PlayerIdleTracker.isPlayerIdle(playerUUID);
+                // If the recipient is AFK, send message to original sender notifying of the status.
+                if (recipientIsAFK) {
+                    // Warning message for AFK recipient for bothering the owner.
+                    if (recipientName.equals("Pilvinen")) {
+                        player.sendMessage(ChatColor.RED + "[" + timestamp + "]" + " Hei, " + playerName + ", kamu. Pilvinen on AFK ja melko kiireinen! Mikäli et saa vastausta ja asiasi koskee palvelimen ylläpitoa, bugi-ilmoitusta, ehdotusta, tai muuta kiireellistä asiaa, varminta on jättää viesti Kuumaan Discord palvelimella sille soveltuvalle kanavalle." + ChatColor.RESET);
+                    } else {
+                        player.sendMessage(ChatColor.YELLOW + "[" + timestamp + "]" + recipientName + " on ollut AFK " + PlayerIdleTracker.getCurrentIdleSessionLengthInMinutes(playerUUID) + " min." + ChatColor.RESET);
+                    }
+                }
+            }
 
             // Log message.
             var logMessage = String.format("[%s] %s: %s", logTimestamp, playerName, replacedMessage);
