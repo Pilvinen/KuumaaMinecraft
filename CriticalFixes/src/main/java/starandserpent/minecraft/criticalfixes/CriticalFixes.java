@@ -105,6 +105,7 @@ public final class CriticalFixes extends JavaPlugin {
         registerPlayerTracker();
         registerPlayerIdleTracker();
         registerBetterRestartServer();
+        registerDamageEffects();
     }
 
     private void showVersionNumber() {
@@ -546,6 +547,12 @@ public final class CriticalFixes extends JavaPlugin {
         var betterRestartServer = new BetterRestartServer(this);
 
         getCommand("ukk").setExecutor(betterRestartServer);
+    }
+
+    private void registerDamageEffects() {
+        System.out.println("CriticalFixes: Loading DamageEffects.");
+        var damageEffects = new DamageEffects(this);
+        pluginManager.registerEvents(damageEffects, this);
     }
 
 }
