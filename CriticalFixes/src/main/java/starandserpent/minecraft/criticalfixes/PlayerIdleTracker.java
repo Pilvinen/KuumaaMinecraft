@@ -60,6 +60,11 @@ public class PlayerIdleTracker implements Listener {
         updateLastActivityTime(event.getPlayer().getUniqueId());
     }
 
+    // Custom player event happened. Can be called by any plugin to stop player from being idle.
+    public static void onCustomPlayerEvent(UUID playerUuid) {
+        updateLastActivityTime(playerUuid);
+    }
+
     @EventHandler public void onPlayerQuit(PlayerQuitEvent event) {
         UUID playerId = event.getPlayer().getUniqueId();
 
@@ -80,7 +85,7 @@ public class PlayerIdleTracker implements Listener {
         currentIdleStartTime.remove(playerId);
     }
 
-    private void updateLastActivityTime(UUID playerUuid) {
+    private static void updateLastActivityTime(UUID playerUuid) {
 
         long currentTime = System.currentTimeMillis();
 

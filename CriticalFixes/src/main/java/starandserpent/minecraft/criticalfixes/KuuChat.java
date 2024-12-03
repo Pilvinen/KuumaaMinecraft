@@ -373,6 +373,9 @@ public class KuuChat implements Listener {
     @EventHandler public void onPlayerChat(AsyncPlayerChatEvent event) throws IOException {
         event.setCancelled(true);
 
+        // Update player activity by calling custom player event. They chatted, they are no longer idle.
+        PlayerIdleTracker.onCustomPlayerEvent(event.getPlayer().getUniqueId());
+
         String message = event.getMessage();
 
         // Replace all aliases with their emojis.
@@ -444,15 +447,15 @@ public class KuuChat implements Listener {
                     if (recipientName.equals("Pilvinen")) {
                         player.sendMessage(ChatColor.RED + "[" + timestamp + "]" + " Hei, " + playerName + ", kamu. Pilvinen on AFK ja melko kiireinen! Mikäli et saa vastausta ja asiasi koskee palvelimen ylläpitoa, bugi-ilmoitusta, ehdotusta, tai muuta kiireellistä asiaa, varminta on jättää viesti Kuumaan Discord palvelimella sille soveltuvalle kanavalle." + ChatColor.RESET);
                     } else {
-                        player.sendMessage(ChatColor.YELLOW + "[" + timestamp + "]" + recipientName + " on ollut AFK " + PlayerIdleTracker.getCurrentIdleSessionLengthInMinutes(playerUUID) + " min." + ChatColor.RESET);
+                        player.sendMessage(ChatColor.YELLOW + "[" + timestamp + "] " + recipientName + " on ollut AFK " + PlayerIdleTracker.getCurrentIdleSessionLengthInMinutes(playerUUID) + " min." + ChatColor.RESET);
                     }
                 }
             }
-
-            // Log message.
-            var logMessage = String.format("[%s] %s: %s", logTimestamp, playerName, replacedMessage);
-            log.info(logMessage);
         }
+
+        // Log message.
+        var logMessage = String.format("[%s] %s: %s", logTimestamp, playerName, message);
+        log.info(logMessage);
 
     }
 
