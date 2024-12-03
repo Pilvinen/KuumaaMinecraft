@@ -28,13 +28,13 @@ public class BetterRestartServer implements CommandExecutor {
             }
 
             // Send the broadcast message using SystemNotifications
-            String[] message = {"Varoitus, ystävät! Palvelin käynnistyy uudelleen 10 sekunnin kuluttua."};
+            String[] message = {"Varoitus, ystävät! Palvelin käynnistyy uudelleen 20 sekunnin kuluttua."};
             SystemNotifications.publicBroadcast(plugin.getServer(), sender, message);
 
-            // Schedule the server restart after 10 seconds (200 ticks)
+            // Schedule the server restart after 20 seconds (400 ticks)
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
-            }, 200L);
+            }, 400L);
 
             return true;
         }
