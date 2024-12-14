@@ -39,13 +39,15 @@ public class HungerFix implements Listener {
 
         // Hunger time.
         var playerHunger = player.getFoodLevel();
-        var maxFoodLevel = 20.0;
-        maxFoodLevel = Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue();
+        var playerSaturation = player.getSaturation();
 
-        // Reduce hunger if not saturated and not zero.
-        if (playerHunger > 0 && playerHunger < maxFoodLevel) {
+        // Reduce saturation first if it's greater than zero.
+        if (playerSaturation > 0) {
+            player.setSaturation(playerSaturation - 1);
+        } else if (playerHunger > 0) {
             player.setFoodLevel(playerHunger - 1);
         }
+
     }
 
 }
