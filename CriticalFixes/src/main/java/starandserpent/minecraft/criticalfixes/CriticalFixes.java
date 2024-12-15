@@ -106,6 +106,8 @@ public final class CriticalFixes extends JavaPlugin {
         registerPlayerIdleTracker();
         registerBetterRestartServer();
         registerDamageEffects();
+        registerGoldCoins();
+        registerWhoWasHereWhileYouWereGone();
     }
 
     private void showVersionNumber() {
@@ -553,6 +555,18 @@ public final class CriticalFixes extends JavaPlugin {
         System.out.println("CriticalFixes: Loading DamageEffects.");
         var damageEffects = new DamageEffects(this);
         pluginManager.registerEvents(damageEffects, this);
+    }
+
+    private void registerGoldCoins() {
+        System.out.println("CriticalFixes: Loading GoldCoins.");
+        var goldCoins = new GoldCoins(this);
+        pluginManager.registerEvents(goldCoins, this);
+    }
+
+    private void registerWhoWasHereWhileYouWereGone() {
+        System.out.println("CriticalFixes: Loading WhoWasHereWhileYouWereGone.");
+        var whoWasHereWhileYouWereGone = new WhoWasHereWhileYouWereGone(this);
+        pluginManager.registerEvents(whoWasHereWhileYouWereGone, this);
     }
 
 }
