@@ -18,7 +18,7 @@ public class WhoWasHereWhileYouWereGone implements Listener {
 
     private final JavaPlugin plugin;
     private Server server;
-    private final Repository<UUID, PlayerLoginInfo> repository;
+    private final Repository<String, PlayerLoginInfo> repository;
 
     public WhoWasHereWhileYouWereGone(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -29,19 +29,44 @@ public class WhoWasHereWhileYouWereGone implements Listener {
     @EventHandler public void onPlayerJoin(PlayerJoinEvent event) {
         UUID playerId = event.getPlayer().getUniqueId();
         long currentTime = System.currentTimeMillis();
+        String playerName = event.getPlayer().getName();
 
         // Get the player's last logout time
-        PlayerLoginInfo lastLogoutInfo = repository.findOne(NQuery.predicate("$.playerId == '" + playerId + "'")).orElse(null);
-        if (lastLogoutInfo == null) {
+        PlayerLoginInfo lastLoginInfo = repository.get(playerId.toString());
+
+        if (lastLoginInfo == null) {
             // If the player has no previous logout info, they are a new player.
-            event.getPlayer().sendMessage("Tervetuloa palvelimelle!");
+
+            String[] firstTimeWelcomeMessage;
+
+            var currentWorld = event.getPlayer().getWorld().getName();
+            if (currentWorld.equals("Tyhjyys")) {
+                firstTimeWelcomeMessage = new String[] {
+                        "Tervetuloa Kuumaahan, " + playerName + "!",
+                        "Uudet pelaajat päästetään alkuspawnilta",
+                        "lyhyen haastattelun jälkeen.",
+                        "Palvelimen ylläpitäjänä toimii Pilvinen."
+                };
+            } else {
+                firstTimeWelcomeMessage = new String[]{
+                        "Tervetuloa Kuumaahan, " + playerName + "!",
+                        "Palvelimen ylläpitäjänä toimii Pilvinen."
+                };
+            }
+
+            SystemNotifications.privateBroadcast(server, event.getPlayer(), firstTimeWelcomeMessage);
+
+            event.getPlayer().sendMessage("Ai niin, " + event.getPlayer().getName() + ". Liity Kuumaan Discordiin:");
+            event.getPlayer().sendMessage("https://discord.gg/esmqVrPG8d");
+            event.getPlayer().sendMessage("Niin pysyt kartalla palvelimen tapahtumista.");
+
+            // Save the player's login info
+            repository.upsert(new PlayerLoginInfo(playerId.toString(), event.getPlayer().getName(), currentTime));
         } else {
             // If the player has previous logout info, they are a returning player.
-            event.getPlayer().sendMessage("Tervetuloa takaisin palvelimelle!");
-        }
+            event.getPlayer().sendMessage("Tervetuloa takaisin, " + playerName + "!");
 
-        if (lastLogoutInfo != null) {
-            long lastLogoutTime = lastLogoutInfo.getTimestamp();
+            long lastLogoutTime = lastLoginInfo.getTimestamp();
 
             // Print out how long ago you were online.
             long timeSinceLastLogout = currentTime - lastLogoutTime;
@@ -54,22 +79,45 @@ public class WhoWasHereWhileYouWereGone implements Listener {
 
             // Get the list of players who logged in after the player's last logout time
             List<PlayerLoginInfo> logins = repository.streamAllValues()
-                    .filter(info -> info.getTimestamp() > lastLogoutTime && !info.getPlayerId().equals(playerId))
+                    .filter(info -> info.getTimestamp() > lastLogoutTime && !info.getPlayerId().equals(playerId.toString()))
                     .collect(Collectors.toList());
 
             if (logins.isEmpty()) {
-                event.getPlayer().sendMessage("Ei kävijöitä sitten viime vierailusi.");
+                event.getPlayer().sendMessage("Ei muita kävijöitä sitten viime vierailusi.");
             } else {
                 var visitorCountSinceLastVisit = logins.size();
-                event.getPlayer().sendMessage(visitorCountSinceLastVisit + " kävijää sitten viime vierailusi:");
-                for (PlayerLoginInfo info : logins) {
-                    event.getPlayer().sendMessage(info.getPlayerName());
+                StringBuilder messageBuilder = new StringBuilder(visitorCountSinceLastVisit + " kävijää sitten viime vierailusi:\n");
+                for (int i = 0; i < logins.size(); i++) {
+                    String loginPlayerName = logins.get(i).getPlayerName();
+                    if (messageBuilder.length() + loginPlayerName.length() + 2 > 256) { // +2 for ", "
+                        event.getPlayer().sendMessage(messageBuilder.toString());
+                        messageBuilder = new StringBuilder();
+                    }
+                    if (!messageBuilder.isEmpty()) {
+                        if (i == logins.size() - 1) {
+                            messageBuilder.append(". ");
+                        } else {
+                            messageBuilder.append(", ");
+                        }
+                    }
+                    messageBuilder.append(loginPlayerName);
+                }
+                if (!messageBuilder.isEmpty()) {
+                    event.getPlayer().sendMessage(messageBuilder.toString());
                 }
             }
-        }
 
-        // Update the player's login info
-        repository.upsert(new PlayerLoginInfo(playerId, event.getPlayer().getName(), currentTime));
+            // Update the player's logout info
+            lastLoginInfo.setTimestamp(currentTime);
+            repository.upsert(lastLoginInfo);
+
+        }
+    }
+
+    private void deleteFuckedUpDatabase() {
+        repository.deleteAll();
+//          Print
+        System.out.println("Database deleted!!!!");
     }
 
     @EventHandler public void onPlayerQuit(PlayerQuitEvent event) {
@@ -77,10 +125,13 @@ public class WhoWasHereWhileYouWereGone implements Listener {
         String playerName = event.getPlayer().getName();
         long currentTime = System.currentTimeMillis();
 
-        // DEBUG
-        System.out.println("Player " + playerName + " quit at " + currentTime);
-
         // Update the player's logout info
-        repository.upsert(new PlayerLoginInfo(playerId, playerName, currentTime));
+        var lastLoginInfo = repository.get(playerId.toString());
+        if (lastLoginInfo != null) {
+            lastLoginInfo.setTimestamp(currentTime);
+            repository.upsert(lastLoginInfo);
+        } else {
+            repository.upsert(new PlayerLoginInfo(playerId.toString(), playerName, currentTime));
+        }
     }
 }

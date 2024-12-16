@@ -8,11 +8,11 @@ import com.nivixx.ndatabase.api.model.NEntity;
 import java.util.UUID;
 
 @NTable(name = "player_login_info")
-public class PlayerLoginInfo extends NEntity<UUID> {
+public class PlayerLoginInfo extends NEntity<String> {
 
     @JsonProperty("playerId")
     @Indexed
-    private UUID playerId;
+    private String playerId;
 
     @JsonProperty("playerName")
     private String playerName;
@@ -23,14 +23,14 @@ public class PlayerLoginInfo extends NEntity<UUID> {
     // Required for NDatabase. Do not remove.
     public PlayerLoginInfo() {}
 
-    public PlayerLoginInfo(UUID playerId, String playerName, long timestamp) {
-        this.setKey(UUID.randomUUID());
+    public PlayerLoginInfo(String playerId, String playerName, long timestamp) {
+        this.setKey(playerId);
         this.playerId = playerId;
         this.playerName = playerName;
         this.timestamp = timestamp;
     }
 
-    public UUID getPlayerId() {
+    public String getPlayerId() {
         return playerId;
     }
 
@@ -41,4 +41,9 @@ public class PlayerLoginInfo extends NEntity<UUID> {
     public long getTimestamp() {
         return timestamp;
     }
+
+    public void setTimestamp(long currentTime) {
+        this.timestamp = currentTime;
+    }
+
 }
