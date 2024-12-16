@@ -40,7 +40,8 @@ public enum CustomItemsEnum {
     CAMPFIRE_SURROGATE_ITEM(282030, Material.SHULKER_SHELL, "Nuotio", 1),
     GRILL(282031, Material.SHULKER_SHELL, "Grilliritilä", 1),
     GOLD_COIN_PILE(282032, Material.SHULKER_SHELL, "Kasa kultakolikoita", 64),
-    GOLD_COIN_STACK(282033, Material.SHULKER_SHELL, "Pino kultakolikoita", 64);
+    GOLD_COIN_STACK(282033, Material.SHULKER_SHELL, "Pino kultakolikoita", 64),
+    TENT(282034, Material.SHULKER_SHELL, "Teltta", 1);
 
     // Constructor.
     private final int id;
