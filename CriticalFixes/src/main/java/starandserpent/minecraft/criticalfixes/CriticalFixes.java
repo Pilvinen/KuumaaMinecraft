@@ -108,6 +108,7 @@ public final class CriticalFixes extends JavaPlugin {
         registerDamageEffects();
         registerGoldCoins();
         registerWhoWasHereWhileYouWereGone();
+        registerCommands();
     }
 
     private void showVersionNumber() {
@@ -567,6 +568,18 @@ public final class CriticalFixes extends JavaPlugin {
         System.out.println("CriticalFixes: Loading WhoWasHereWhileYouWereGone.");
         var whoWasHereWhileYouWereGone = new WhoWasHereWhileYouWereGone(this);
         pluginManager.registerEvents(whoWasHereWhileYouWereGone, this);
+    }
+
+    private void registerCommands() {
+        System.out.println("CriticalFixes: Loading Commands.");
+        var commands = new Commands(this);
+        getCommand("komennot").setExecutor(commands);
+        getCommand("commands").setExecutor(commands);
+        getCommand("help").setExecutor(commands);
+        getCommand("apua").setExecutor(commands);
+        getCommand("info").setExecutor(commands);
+        getCommand("discord").setExecutor(commands);
+        getCommand("johdanto").setExecutor(commands);
     }
 
 }

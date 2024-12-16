@@ -5,6 +5,27 @@ api-version: '1.20'
 depend: [ ProtocolLib, NDatabase ]
 softdepend: [ Tooltips ]
 commands:
+  komennot:
+    description: Näytä kaikki käytettävissä olevat komennot
+    usage: /komennot
+  commands:
+      description: Näytä kaikki käytettävissä olevat komennot
+      usage: /commands
+  help:
+    description: Näytä kaikki käytettävissä olevat komennot
+    usage: /help
+  apua:
+    description: Näytä kaikki käytettävissä olevat komennot
+    usage: /apua
+  info:
+    description: Näytä kaikki käytettävissä olevat komennot
+    usage: /info
+  discord:
+    description: Kuumaan Discord palvelimen linkki.
+    usage: /discord
+  johdanto:
+    description: Johdanto Kuumaahan.
+    usage: /johdanto
   ukk:
     description: UudelleenKäynnistäKuumaa.
     usage: /ukk <vapaaehtoinen viesti>
