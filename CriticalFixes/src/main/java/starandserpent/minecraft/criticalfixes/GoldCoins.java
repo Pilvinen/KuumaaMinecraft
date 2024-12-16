@@ -132,10 +132,27 @@ public class GoldCoins implements Listener {
         Bukkit.addRecipe(recipe);
     }
 
-    @EventHandler
-    public void onPrepareItemCraft(PrepareItemCraftEvent event) {
+    @EventHandler public void onPrepareItemCraft(PrepareItemCraftEvent event) {
         if (event.getRecipe() != null && event.getRecipe().getResult().getType() == Material.SHULKER_SHELL) {
             ItemStack[] matrix = event.getInventory().getMatrix();
+
+            var recipe = event.getRecipe();
+            var result = recipe.getResult();
+            // Check for specific meta data custom model values.
+            if (!result.hasItemMeta()) {
+                return;
+            }
+            var meta = event.getRecipe().getResult().getItemMeta();
+            if (!meta.hasCustomModelData()) {
+                return;
+            }
+
+            var customModelData = meta.getCustomModelData();
+            if (!(customModelData == 282032 // Gold coin pile
+                    || customModelData == 282033)) { // Gold coin stack
+                return;
+            }
+
             boolean isGoldCoinPile = false;
             boolean isGoldCoinStack = false;
 
@@ -169,9 +186,8 @@ public class GoldCoins implements Listener {
                 if (totalGoldNuggets < 64) {
                     event.getInventory().setResult(null);
                 }
-            } else {
-                event.getInventory().setResult(null);
             }
+
         }
     }
 
@@ -200,9 +216,7 @@ public class GoldCoins implements Listener {
                     }
                 }
             }
-        }
-
-        else if (result.getType() == Material.SHULKER_SHELL && customModelData == 282033) {
+        } else if (result.getType() == Material.SHULKER_SHELL && customModelData == 282033) {
             ItemStack[] matrix = event.getInventory().getMatrix();
             int totalGoldNuggets = 0;
             List<Integer> validIndices = new ArrayList<>();
