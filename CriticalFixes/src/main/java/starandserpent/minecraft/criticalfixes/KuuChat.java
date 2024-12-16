@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -209,13 +210,20 @@ public class KuuChat implements Listener {
     }
 
     // On player joining the server.
-    @EventHandler public void onPlayerJoin(PlayerJoinEvent event) {
+    @EventHandler(priority = EventPriority.HIGHEST) public void onPlayerJoin(PlayerJoinEvent event) {
         cacheChatFacesForPlayer(event);
+
+        boolean isFirstJoin = WhoWasHereWhileYouWereGone.hasPlayerBeenHereBefore(event.getPlayer().getUniqueId());
 
         // Set custom join message.
         var chatTimestamp = new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date());
         var randomJoinMessage = randomJoinMessages[(int) (Math.random() * randomJoinMessages.length)];
-        event.setJoinMessage(ChatColor.YELLOW + "[" + chatTimestamp + "] " + randomJoinMessage + " " + event.getPlayer().getName() + " saapui palvelimelle." + ChatColor.RESET);
+
+        if (isFirstJoin) {
+            event.setJoinMessage(ChatColor.GREEN + "[" + chatTimestamp + "] " + event.getPlayer().getName() + " saapui palvelimelle ensimmäistä kertaa!" + ChatColor.RESET);
+        } else {
+            event.setJoinMessage(ChatColor.YELLOW + "[" + chatTimestamp + "] " + randomJoinMessage + " " + event.getPlayer().getName() + " saapui palvelimelle." + ChatColor.RESET);
+        }
 
         // Log join messages.
         var logTimestamp = new java.text.SimpleDateFormat("dd.MM.yyyy, HH:mm").format(new java.util.Date());

@@ -1,10 +1,10 @@
 package starandserpent.minecraft.criticalfixes;
 
 import com.nivixx.ndatabase.api.NDatabase;
-import com.nivixx.ndatabase.api.query.NQuery;
 import com.nivixx.ndatabase.api.repository.Repository;
 import org.bukkit.Server;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -18,7 +18,7 @@ public class WhoWasHereWhileYouWereGone implements Listener {
 
     private final JavaPlugin plugin;
     private Server server;
-    private final Repository<String, PlayerLoginInfo> repository;
+    private static Repository<String, PlayerLoginInfo> repository;
 
     public WhoWasHereWhileYouWereGone(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -26,7 +26,7 @@ public class WhoWasHereWhileYouWereGone implements Listener {
         this.repository = NDatabase.api().getOrCreateRepository(PlayerLoginInfo.class);
     }
 
-    @EventHandler public void onPlayerJoin(PlayerJoinEvent event) {
+    @EventHandler(priority = EventPriority.LOW) public void onPlayerJoin(PlayerJoinEvent event) {
         UUID playerId = event.getPlayer().getUniqueId();
         long currentTime = System.currentTimeMillis();
         String playerName = event.getPlayer().getName();
@@ -138,4 +138,9 @@ public class WhoWasHereWhileYouWereGone implements Listener {
             repository.upsert(new PlayerLoginInfo(playerId.toString(), playerName, currentTime));
         }
     }
+
+    public static boolean hasPlayerBeenHereBefore(UUID playerId) {
+        return repository.get(playerId.toString()) != null;
+    }
+
 }
