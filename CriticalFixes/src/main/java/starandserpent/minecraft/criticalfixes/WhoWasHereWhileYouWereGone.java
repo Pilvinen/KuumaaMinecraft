@@ -90,23 +90,22 @@ public class WhoWasHereWhileYouWereGone implements Listener {
                 event.getPlayer().sendMessage("Ei muita kävijöitä sitten viime vierailusi.");
             } else {
                 var visitorCountSinceLastVisit = logins.size();
-                StringBuilder messageBuilder = new StringBuilder(visitorCountSinceLastVisit + " kävijää sitten viime vierailusi:\n");
+
+                String pluralOrNot = visitorCountSinceLastVisit == 1 ? "kävijä" : "kävijää";
+                StringBuilder messageBuilder = new StringBuilder(visitorCountSinceLastVisit + " " + pluralOrNot + " sitten viime vierailusi:\n");
                 for (int i = 0; i < logins.size(); i++) {
                     String loginPlayerName = logins.get(i).getPlayerName();
                     if (messageBuilder.length() + loginPlayerName.length() + 2 > 256) { // +2 for ", "
                         event.getPlayer().sendMessage(messageBuilder.toString());
                         messageBuilder = new StringBuilder();
                     }
-                    if (!messageBuilder.isEmpty()) {
-                        if (i == logins.size() - 1) {
-                            messageBuilder.append(". ");
-                        } else {
-                            messageBuilder.append(", ");
-                        }
+                    if (i > 0) {
+                        messageBuilder.append(", ");
                     }
                     messageBuilder.append(loginPlayerName);
                 }
                 if (!messageBuilder.isEmpty()) {
+                    messageBuilder.append(".");
                     event.getPlayer().sendMessage(messageBuilder.toString());
                 }
             }
