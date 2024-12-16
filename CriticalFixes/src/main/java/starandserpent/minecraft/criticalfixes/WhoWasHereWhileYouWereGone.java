@@ -64,8 +64,6 @@ public class WhoWasHereWhileYouWereGone implements Listener {
             repository.upsert(new PlayerLoginInfo(playerId.toString(), event.getPlayer().getName(), currentTime));
         } else {
             // If the player has previous logout info, they are a returning player.
-            event.getPlayer().sendMessage("Tervetuloa takaisin, " + playerName + "!");
-
             long lastLogoutTime = lastLoginInfo.getTimestamp();
 
             // Print out how long ago you were online.
@@ -75,7 +73,13 @@ public class WhoWasHereWhileYouWereGone implements Listener {
             long minutes = seconds / 60;
             long hours = minutes / 60;
             long days = hours / 24;
-            event.getPlayer().sendMessage("Viime käynnistäsi on " + days + " päivää, " + hours % 24 + " tuntia ja " + minutes % 60 + " min.");
+
+            var welcomeMessage = new String[]{
+                    "Tervetuloa kotiin, " + playerName + "!",
+                    "Olit poissa " + days + " päivää, " + hours % 24 + " tuntia ja " + minutes % 60 + " min."
+            };
+
+            SystemNotifications.privateBroadcast(server, event.getPlayer(), welcomeMessage);
 
             // Get the list of players who logged in after the player's last logout time
             List<PlayerLoginInfo> logins = repository.streamAllValues()
