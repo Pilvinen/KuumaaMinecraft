@@ -213,7 +213,7 @@ public class KuuChat implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST) public void onPlayerJoin(PlayerJoinEvent event) {
         cacheChatFacesForPlayer(event);
 
-        boolean isFirstJoin = WhoWasHereWhileYouWereGone.hasPlayerBeenHereBefore(event.getPlayer().getUniqueId());
+        boolean isFirstJoin = !WhoWasHereWhileYouWereGone.hasPlayerBeenHereBefore(event.getPlayer().getUniqueId());
 
         // Set custom join message.
         var chatTimestamp = new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date());
