@@ -50,8 +50,8 @@ public class Commands implements CommandExecutor {
         message.append(ChatColor.YELLOW).append("Käytettävissä olevat komennot:").append(ChatColor.RESET).append("\n")
                 .append(ChatColor.WHITE).append("/komennot, /commands, /help, /apua, /info").append(ChatColor.RESET).append("\n")
                 .append(ChatColor.GRAY).append("Tämä komento. Näyttää käytettävissä olevat komennot.").append(ChatColor.RESET).append("\n")
-                .append(ChatColor.WHITE).append("/kuumaa").append(ChatColor.RESET).append("\n")
-                .append(ChatColor.GRAY).append("Tietoa Kuumaasta.").append(ChatColor.RESET).append("\n")
+                .append(ChatColor.WHITE).append("/johdanto").append(ChatColor.RESET).append("\n")
+                .append(ChatColor.GRAY).append("Taustarinan kertaus.").append(ChatColor.RESET).append("\n")
                 .append(ChatColor.WHITE).append("/discord").append(ChatColor.RESET).append("\n")
                 .append(ChatColor.GRAY).append("Kuumaan Discord palvelimen linkki.").append(ChatColor.RESET).append("\n")
                 .append(ChatColor.WHITE).append("/tilastoja").append(ChatColor.RESET).append("\n")
@@ -70,17 +70,17 @@ public class Commands implements CommandExecutor {
 
     private void johdanto(CommandSender sender) {
         StringBuilder message = new StringBuilder();
-        message.append(ChatColor.GRAY).append("Avaruusalus Asterion halkoi kosmoksen mustaa tyhjyyttä, kotiplaneetan läheisyys väreillen kuin lupaus.\n" +
-                        "Konehuoneen kaiutin räsähti eloon." +
+        message.append(ChatColor.GRAY).append("Avaruusalus Asterion halkoi kosmoksen mustaa tyhjyyttä hyperavaruuden hehkussa, kotiplaneetan läheisyys väreili kuin lupaus. Enää seitsemän parsekkia...\n" +
+                        "Konehuoneen kaiutin räsähti eloon.\n" +
                         "\"Konehuone: Kapteeni! Perävakauttimen kanssa on ongelmia, vaikuttaa aivan siltä kuin... krrrzzzssshhh—\"\n" +
                         "Koko alus tärähti. Kipinöitä lensi ja hälytyssireenit ulvoivat.\n" +
                         "\"Kapteeni! Olemme törmäyskurssilla tuon tuntemattoman kuun kanssa! Ohjaus ei vastaa!\"\n" +
                         "\"Energiasuojat ylös! Varautukaa törmäykseen!\" huusin, mutta sanat hukkuivat korvia raastavaan räjähdykseen. Metallin kääntyvä ulina ja sitten… tyhjyys.\n" +
-                        "Herään tuskaisena. Ilma on raskasta, täynnä vieraita tuoksuja. Kuun kylmä maa tuntuu epätodellisen kiinteältä selkäni alla. Yläpuolellani taivaan tumma syvyys hohtaa tuntemattoman planeetan hehkua. Maailma näyttää samaan aikaan elottomalta ja täynnä salaisuuksia." +
-                        "Raahaudun jaloilleni. Näköpiirissä, kukkulan rinteellä, erottuu primitiivisiä rakennelmia ja savupatsaita. Silmäni siristyvät epäuskosta. Elämää." +
-                        "Aluksen miehistö… missä he ovat? Pääni jyskyttää, mutta totuus iskee terävästi: he luulivat minua kuolleeksi. Jättivät minut tänne." +
-                        "Näen horisontissa liikettä. Varjoja. En tiedä, ovatko ne ystäviä vai vihollisia. Yksi asia on selvä: olen yksin ja vieraassa maailmassa. Alukseni ei ole menossa minnekään. Onko tämä kuoleman odotushuone vai uusi alku?" +
-                        "Käännän kasvoni tuntematonta planeettaa kohti. Jossain siellä, elämän ja kuoleman välissä, odottaa vastaus.").append(ChatColor.RESET).append("\n");
+                        "Herään tuskaisena. Ilma on raskasta, täynnä vieraita tuoksuja ja savua. Aluksen kylmä lattia tuntuu epätodellisen kiinteältä selkäni alla. Yläpuolellani taivaan tumma syvyys hohtaa tuntemattoman planeetan hehkua. Maailma näyttää karulta, täynnä piilotettuja salaisuuksia. " +
+                        "Raahaudun jaloilleni. Aluksen monitorista erottuu kukkulan rinteellä primitiivisiä rakennelmia ja savupatsaita. Silmäni siristyvät epäuskosta. Elämää. " +
+                        "Aluksen miehistö… missä he ovat? Pääni jyskyttää, mutta totuus iskee terävästi: he luulivat minua kuolleeksi. Jättivät minut tänne. " +
+                        "Skanneri näyttää horisontissa liikettä. Varjoja. En tiedä, ovatko ne ystäviä vai vihollisia. Yksi asia on selvä: olen yksin ja vieraassa maailmassa. Alukseni ei ole menossa minnekään. Onko tämä kuoleman odotushuone vai uusi alku? " +
+                        "Käännän kasvoni tuntematonta kohti. Jossain siellä, elämän ja kuoleman välissä, odottaa vastaus.").append(ChatColor.RESET).append("\n");
 
         sender.sendMessage(message.toString());
     }

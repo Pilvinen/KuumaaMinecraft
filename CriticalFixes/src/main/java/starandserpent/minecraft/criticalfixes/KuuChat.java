@@ -404,7 +404,12 @@ public class KuuChat implements Listener {
         // Set name to white.
         var player = event.getPlayer();
         var playerUUID = player.getUniqueId();
-        var playerName = player.getName();
+        String playerName = player.getName();
+
+        // Special case for Tyhjyys world. They are all captains.
+        if (player.getWorld().getName().equals("Tyhjyys")) {
+            playerName = "Kapteeni " + playerName;
+        }
 
         // Get chat head graphics.
         boolean isHatEnabled = getHatState(player);
@@ -417,8 +422,31 @@ public class KuuChat implements Listener {
 //        var formattedPlayerHead =  chatHeadAPI.getHeadAsStringFromBase64(playerUUID, testingFace);
         // DEBUG: TEST BASE64 STRING
 
+        String senderWorld = player.getWorld().getName();
+        boolean canSendToAndReceiveFromTyhjyys = playerName.equals("Pilvinen");
+
         // Send the message to each player individually.
         for (Player recipient : server.getOnlinePlayers()) {
+
+            // World-specific message sending rules:
+            // Pilvinen can send and receive messages from and to players in Tyhjyys.
+            // People in Tyhjyys can see each other's messages.
+            // No one else can send messages to people in Tyhjyys or receive messages from them.
+
+            // World-specific message sending rules:
+            // 1. Pilvinen can send/receive messages to/from anyone.
+            // 2. People in Tyhjyys can only send to others in Tyhjyys or to Pilvinen.
+            // 3. No one outside Tyhjyys can send messages to people in Tyhjyys unless they are Pilvinen.
+            var recipientWorld = recipient.getWorld().getName();
+            boolean canSendMessage = canSendToAndReceiveFromTyhjyys || (
+                    senderWorld.equals("Tyhjyys") && (recipientWorld.equals("Tyhjyys") || recipient.getName().equals("Pilvinen")) ||
+                            !senderWorld.equals("Tyhjyys") && !recipientWorld.equals("Tyhjyys")
+            );
+
+            // Skip this recipient if not allowed by the special rules for Tyhjyys.
+            if (!canSendMessage) {
+                continue;
+            }
 
             // Format the chat message nicer.
 //            var formattedMessage = nameDefaultColor + replacedMessage;

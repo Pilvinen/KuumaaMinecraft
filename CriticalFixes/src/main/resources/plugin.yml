@@ -5,6 +5,9 @@ api-version: '1.20'
 depend: [ ProtocolLib, NDatabase ]
 softdepend: [ Tooltips ]
 commands:
+  hyväksypelaaja:
+    description: Hyväksy pelaaja palvelimelle. Siirtää pelaajan Kuumaan spawnille.
+    usage: /hyväksypelaaja <pelaajan nimi>
   komennot:
     description: Näytä kaikki käytettävissä olevat komennot
     usage: /komennot

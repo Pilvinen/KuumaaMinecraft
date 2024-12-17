@@ -109,6 +109,7 @@ public final class CriticalFixes extends JavaPlugin {
         registerGoldCoins();
         registerWhoWasHereWhileYouWereGone();
         registerCommands();
+        registerIntroduction();
     }
 
     private void showVersionNumber() {
@@ -580,6 +581,13 @@ public final class CriticalFixes extends JavaPlugin {
         getCommand("info").setExecutor(commands);
         getCommand("discord").setExecutor(commands);
         getCommand("johdanto").setExecutor(commands);
+    }
+
+    private void registerIntroduction() {
+        System.out.println("CriticalFixes: Loading Introduction.");
+        var introduction = new Introduction(this);
+        pluginManager.registerEvents(introduction, this);
+        getCommand("hyväksypelaaja").setExecutor(introduction);
     }
 
 }
