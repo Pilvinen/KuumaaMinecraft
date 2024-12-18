@@ -97,7 +97,7 @@ public class CustomItems implements CommandExecutor {
         // Create a custom item stack.
         var customItemMaterial = customItemsEnum.getMaterial();
         var customItemId = customItemsEnum.getId();
-        var customItemName = customItemsEnum.getItemName();
+        var displayName = customItemsEnum.getDisplayName();
 
         ItemStack itemStack = new ItemStack(customItemMaterial, amount);
         ItemMeta itemMeta = itemStack.getItemMeta();
@@ -106,7 +106,7 @@ public class CustomItems implements CommandExecutor {
             return false;
         }
         itemMeta.setCustomModelData(customItemId);
-        itemMeta.setItemName(customItemName);
+        itemMeta.setItemName(displayName);
         itemStack.setItemMeta(itemMeta);
 
         // Check if player has space for the item stack.
@@ -116,7 +116,7 @@ public class CustomItems implements CommandExecutor {
         }
 
         // Give the item stack to player.
-        player.sendMessage("Gave " + amount + " " + customItemName + " to " + player.getName());
+        player.sendMessage("Gave " + amount + " " + displayName + " to " + player.getName());
         player.getInventory().addItem(itemStack);
 
         return true;
