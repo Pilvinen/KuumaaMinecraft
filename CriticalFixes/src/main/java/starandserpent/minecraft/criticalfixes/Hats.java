@@ -17,6 +17,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 
+import static javax.swing.UIManager.put;
+
 public class Hats implements Listener {
 
     private final JavaPlugin plugin;
@@ -60,6 +62,14 @@ public class Hats implements Listener {
         put(Material.WHITE_BANNER, new Permission("hats.wear.special_hats.white_banner"));
         put(Material.RED_BANNER, new Permission("hats.wear.special_hats.red_banner"));
     }};
+
+    // HashMap of shulker shell based hats.
+    private static final Permission permissionAllShulkerHats = new Permission("hats.wear.all_shulker_hats");
+    private static final HashMap<ShulkerHatKey, Permission> shulkerHats = new HashMap<>() {{
+        // Rajattoman vallan sarvikruunu.
+        put(new ShulkerHatKey(Material.SHULKER_SHELL, CustomItemsEnum.HORNED_HEADRESS, new Permission("hats.wear.shulker_hats.rajattoman_vallan_sarvikruunu")), new Permission("hats.wear.shulker_hats." + CustomItemsEnum.HORNED_HEADRESS.getGiveItemName().toLowerCase()));
+    }};
+
 
     public Hats(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -281,6 +291,39 @@ public class Hats implements Listener {
             if (player.hasPermission(specialHats.get(itemType))) {
                 permissionCorrect = true;
             }
+        // Shulker hats.
+        } else {
+            // Check if the item is a shulker shell and if it contains item meta.
+            if (itemType == Material.SHULKER_SHELL && item.hasItemMeta()) {
+                // Check first if contains custom model data.
+                var meta = item.getItemMeta();
+                if (meta.hasCustomModelData()) {
+
+                    var currentCustomModelData = meta.getCustomModelData();
+
+                    // Now we can check if the item IS a shulker hat.
+                    for (ShulkerHatKey iteratedShulkerHat : shulkerHats.keySet()) {
+                        if (iteratedShulkerHat.getCustomModelId().getId() == currentCustomModelData) {
+                            // We've established this can be worn as a hat.
+                            canWearAsHat = true;
+
+                            // Player has all permissions.
+                            if (player.hasPermission(permissionAllShulkerHats)) {
+                                permissionCorrect = true;
+                                break;
+                            }
+
+                            // Check if player actually has specific permission to wear it.
+                            permissionCorrect = player.hasPermission(iteratedShulkerHat.getHatPermission());
+                            if (permissionCorrect) {
+                                break;
+                            }
+                        }
+                    }
+
+                }
+            }
+
         }
 
         // Both conditions must be true:
