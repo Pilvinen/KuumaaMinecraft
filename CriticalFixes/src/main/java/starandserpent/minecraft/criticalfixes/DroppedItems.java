@@ -336,13 +336,13 @@ public class DroppedItems implements Listener {
         ItemStack item = itemFrame.getItem();
         var itemType = item.getType();
 
-        // If item frame is invisible, remove it.
+        // If item frame is invisible, do not handle it.
         if (itemFrame.isVisible()) {
 //            System.out.println("Item frame is visible.");
             return;
         }
 
-        // But only if the item is a book of some sort.
+        // Do not handle anything else than books either.
         if (itemType != Material.WRITABLE_BOOK
             && itemType != Material.WRITTEN_BOOK
             && itemType != Material.BOOK) {
@@ -501,7 +501,9 @@ public class DroppedItems implements Listener {
         }
 
         // Must be a book.
-        if (itemType != Material.BOOK) {
+        if (itemType != Material.BOOK
+            && itemType != Material.WRITABLE_BOOK
+            && itemType != Material.WRITTEN_BOOK) {
 //            System.out.println("Item is not a book.");
             return;
         }
@@ -518,8 +520,15 @@ public class DroppedItems implements Listener {
         // Cancel event.
         event.setCancelled(true);
 
-        ItemStack droppingItemStack = new ItemStack(Material.BOOK, count);
-        world.dropItemNaturally(dropLocation, droppingItemStack);
+        if (itemType == Material.BOOK) {
+            ItemStack droppingItemStack = new ItemStack(Material.BOOK, count);
+            world.dropItemNaturally(dropLocation, droppingItemStack);
+        } else if (itemType == Material.WRITABLE_BOOK) {
+            world.dropItemNaturally(dropLocation, item);
+        } else {
+            world.dropItemNaturally(dropLocation, item);
+        }
+
         itemFrame.remove();
     }
 

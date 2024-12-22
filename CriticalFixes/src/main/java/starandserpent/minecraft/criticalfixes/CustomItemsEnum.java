@@ -42,7 +42,11 @@ public enum CustomItemsEnum {
     GOLD_COIN_PILE(282032, Material.SHULKER_SHELL, "kasa_kultakolikoita", 64, "Kasa kultakolikoita"),
     GOLD_COIN_STACK(282033, Material.SHULKER_SHELL, "pino_kultakolikoita", 64, "Pino kultakolikoita"),
     TENT(282034, Material.SHULKER_SHELL, "teltta", 1, "Teltta"),
-    HORNED_HEADRESS(282035, Material.SHULKER_SHELL, "rajattoman_vallan_sarvikruunu", 1, "Rajattoman vallan sarvikruunu");
+    HORNED_HEADRESS(282035, Material.SHULKER_SHELL, "rajattoman_vallan_sarvikruunu", 1, "Rajattoman vallan sarvikruunu"),
+    HAT_FARMER(282036, Material.SHULKER_SHELL, "heinähattu", 16, "Heinähattu"),
+    HAT_SHEPHERD(282037, Material.SHULKER_SHELL, "paimentolaishattu", 16, "Paimentolaishattu"),
+    HAT_FISHERMAN(282038, Material.SHULKER_SHELL, "huopahattu", 16, "Huopahattu"),
+    HAT_FLETCHER(282039, Material.SHULKER_SHELL, "metsästyshattu", 16, "Metsästyshattu");
 
     // Constructor.
     private final int id;

@@ -68,6 +68,14 @@ public class Hats implements Listener {
     private static final HashMap<ShulkerHatKey, Permission> shulkerHats = new HashMap<>() {{
         // Rajattoman vallan sarvikruunu.
         put(new ShulkerHatKey(Material.SHULKER_SHELL, CustomItemsEnum.HORNED_HEADRESS, new Permission("hats.wear.shulker_hats.rajattoman_vallan_sarvikruunu")), new Permission("hats.wear.shulker_hats." + CustomItemsEnum.HORNED_HEADRESS.getGiveItemName().toLowerCase()));
+        // Heinähattu.
+        put(new ShulkerHatKey(Material.SHULKER_SHELL, CustomItemsEnum.HAT_FARMER, new Permission("hats.wear.shulker_hats.heinähattu")), new Permission("hats.wear.shulker_hats." + CustomItemsEnum.HAT_FARMER.getGiveItemName().toLowerCase()));
+        // Paimentolaishattu.
+        put(new ShulkerHatKey(Material.SHULKER_SHELL, CustomItemsEnum.HAT_SHEPHERD, new Permission("hats.wear.shulker_hats.paimentolaishattu")), new Permission("hats.wear.shulker_hats." + CustomItemsEnum.HAT_SHEPHERD.getGiveItemName().toLowerCase()));
+        // Huopahattu.
+        put(new ShulkerHatKey(Material.SHULKER_SHELL, CustomItemsEnum.HAT_FISHERMAN, new Permission("hats.wear.shulker_hats.huopahattu")), new Permission("hats.wear.shulker_hats." + CustomItemsEnum.HAT_FISHERMAN.getGiveItemName().toLowerCase()));
+        // Metsästyshattu.
+        put(new ShulkerHatKey(Material.SHULKER_SHELL, CustomItemsEnum.HAT_FLETCHER, new Permission("hats.wear.shulker_hats.metsästyshattu")), new Permission("hats.wear.shulker_hats." + CustomItemsEnum.HAT_FLETCHER.getGiveItemName().toLowerCase()));
     }};
 
 
