@@ -545,4 +545,42 @@ public class BanImprovements implements CommandExecutor, Listener {
         return banMessage;
     }
 
+    // Static method for checking if player is banned or not from UUID.
+    public static boolean isPlayerBanned(UUID playerUuid) {
+        var banList = Bukkit.getServer().getBanList(BanList.Type.PROFILE);
+
+        PlayerProfile playerProfile = null;
+        try {
+            playerProfile = Bukkit.createPlayerProfile(playerUuid);
+        } catch (Exception e) {
+            // Can't be found so not banned.
+            return false;
+        }
+
+        // Check if player is banned by UUID or name.
+        var playerName = playerProfile.getName();
+        if (playerName == null) {
+            // Can't be found for some reason, so I guess not banned.
+            return false;
+        }
+
+        return banList.isBanned(playerName);
+    }
+
+    // Static method for checking if player is banned or not from player name.
+    public static boolean isPlayerBanned(String playerName) {
+        var banList = Bukkit.getServer().getBanList(BanList.Type.PROFILE);
+
+        PlayerProfile playerProfile = null;
+        try {
+            playerProfile = Bukkit.createPlayerProfile(playerName);
+        } catch (Exception e) {
+            // Can't be found so not banned.
+            return false;
+        }
+
+        // Check if player is banned by name.
+        return banList.isBanned(playerName);
+    }
+
 }
