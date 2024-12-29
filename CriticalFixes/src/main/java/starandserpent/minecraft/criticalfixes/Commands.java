@@ -58,6 +58,8 @@ public class Commands implements CommandExecutor {
                 .append(ChatColor.GRAY).append("Näyttää palvelimen yleisiä tilastot.").append(ChatColor.RESET).append("\n")
                 .append(ChatColor.WHITE).append("/top10").append(ChatColor.RESET).append("\n")
                 .append(ChatColor.GRAY).append("Näyttää palvelimen kymmenen aktiivisinta pelaajaa.").append(ChatColor.RESET).append("\n")
+                .append(ChatColor.WHITE).append("/top10 kadonneet").append(ChatColor.RESET).append("\n")
+                .append(ChatColor.GRAY).append("Näyttää palvelimen kymmenen epäaktiivisinta pelaajaa.").append(ChatColor.RESET).append("\n")
                 .append(ChatColor.WHITE).append("/missä <pelaaja>").append(ChatColor.RESET).append("\n")
                 .append(ChatColor.GRAY).append("Näyttää tietoja tietystä pelaajasta.").append(ChatColor.RESET);
         sender.sendMessage(message.toString());
