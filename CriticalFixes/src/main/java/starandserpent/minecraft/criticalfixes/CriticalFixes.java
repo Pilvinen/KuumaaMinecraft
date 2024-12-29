@@ -9,6 +9,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import github.scarsz.discordsrv.DiscordSRV;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import starandserpent.minecraft.criticalfixes.Locking.LockingMechanism;
 
 import java.io.IOException;
 import java.util.List;
@@ -116,6 +117,7 @@ public final class CriticalFixes extends JavaPlugin {
         registerPermissionManager();
         registerCurtains();
         registerResourcePackLoader();
+        registerLockingMechanism();
     }
 
     private void showVersionNumber() {
@@ -621,6 +623,12 @@ public final class CriticalFixes extends JavaPlugin {
         getCommand("resourcepack").setExecutor(resourcePackLoader);
         getCommand("respack").setExecutor(resourcePackLoader);
         getCommand("resurssipaketti").setExecutor(resourcePackLoader);
+    }
+
+    private void registerLockingMechanism() {
+        System.out.println("CriticalFixes: Loading Locking.");
+        var lockingMechanism = new LockingMechanism(this);
+        pluginManager.registerEvents(lockingMechanism, this);
     }
 
 }
