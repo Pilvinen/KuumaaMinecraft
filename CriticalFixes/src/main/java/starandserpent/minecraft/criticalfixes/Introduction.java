@@ -32,7 +32,6 @@ public class Introduction implements Listener, CommandExecutor {
     private Map<Integer, BukkitTask> taskIdMap = new ConcurrentHashMap<>();
     private AtomicInteger nextTaskId = new AtomicInteger();
 
-
     private static final String[] MESSAGES = {
             ChatColor.DARK_AQUA + "Avaruusalus Asterion halkoi kosmoksen mustaa tyhjyyttä hyperavaruuden hehkussa, kotiplaneetan läheisyys väreili kuin lupaus. Vuoden mittaisen palvelukierroksen jälkeen enää seitsemän parsekkia kotiin..." + ChatColor.RESET,
             ChatColor.RED + "Försti: " + ChatColor.DARK_AQUA + "Hyvää huomenta, kapteeni %s." + ChatColor.RESET,
@@ -214,6 +213,10 @@ public class Introduction implements Listener, CommandExecutor {
         return true;
     }
 
+    public static boolean isPlayerInGroup(Player player, String group) {
+        return player.hasPermission("group." + group);
+    }
+
     private void hyväksyPelaaja(@NotNull CommandSender sender, @NotNull String arg) {
         Player player = server.getPlayer(arg);
         if (player == null) {
@@ -225,11 +228,21 @@ public class Introduction implements Listener, CommandExecutor {
 
         if (!"Tyhjyys".equals(playerWorld.getName())) {
             sender.sendMessage(ChatColor.RED + "Virhe: " + player.getName() + " on jo hyväksytty, hän on maailmassa " + playerWorld.getName() + " sijainnissa " + player.getLocation().getBlockX() + ", " + player.getLocation().getBlockY() + ", " + player.getLocation().getBlockZ() + ".");
+
+            // Check if player has group "pelaaja" and if not, add it.
+            server.dispatchCommand(sender, "lp user " + player.getName() + " parent add pelaaja");
+            sender.sendMessage(ChatColor.DARK_AQUA + "Pelaajalle " + player.getName() + " kuitenkin lisättiin ryhmä Pelaaja.");
             return;
         }
 
         // Cancel all tasks for the player
         cancelAllTasksForPlayer(player);
+
+        sender.sendMessage(ChatColor.DARK_AQUA + "Pelaaja " + player.getName() + " hyväksytty.");
+
+        // Check if player has group "pelaaja" and if not, add it.
+        server.dispatchCommand(sender, "lp user " + player.getName() + " parent add pelaaja");
+        sender.sendMessage(ChatColor.DARK_AQUA + "Pelaajalle " + player.getName() + " lisättiin ryhmä Pelaaja.");
 
         // Show effects and advance the story.
         advanceStoryInShip(player);
