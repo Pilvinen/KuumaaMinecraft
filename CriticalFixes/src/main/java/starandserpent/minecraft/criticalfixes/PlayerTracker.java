@@ -100,14 +100,16 @@ public class PlayerTracker implements Listener, CommandExecutor, PlayerLogoutLis
 
     @Override public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
-        // /pelaajat
-        // /players
+        // /pelaajat, /pelaajat kadonneet
+        // /players, /players kadonneet
+        // /top10, /top10 kadonneet
         if (command.getName().equalsIgnoreCase("pelaajat")
                 ||command.getName().equalsIgnoreCase("players")
                 ||command.getName().equalsIgnoreCase("top10")) {
-            showPlayerStatistics(sender);
+            showPlayerStatistics(sender, args);
             return true;
         }
+
 
         // /pelaaja <pelaajanimi>
         // /player <playername>
@@ -130,7 +132,76 @@ public class PlayerTracker implements Listener, CommandExecutor, PlayerLogoutLis
         return false;
     }
 
-    private void showPlayerStatistics(@NotNull CommandSender sender) {
+
+    private void showPlayerWhoHaveNotPlayed(@NotNull CommandSender sender) {
+
+        // Create top 10 list of players who have been away the longest.
+        PlayerTrackerData[] worstPlayers = getWorstPlayers(10);
+
+        // Prepare the message lines.
+        List<String> messageLines = new ArrayList<>();
+
+        // Send the worst players to the sender.
+        messageLines.add("Top " + worstPlayers.length + " kadonneet pelaajat.");
+        messageLines.add("Sija | Nimi     | Viimeksi nähty");
+
+        String doublePositions = " ";
+        String singlePositions = "  ";
+        int position = 1;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+
+        for (PlayerTrackerData player : worstPlayers) {
+            // Get player name from UUID.
+            String playerName = player.lastKnownName;
+            if (playerName == null || playerName.isEmpty()) {
+                playerName = "Tuntematon";
+            }
+
+            String positionString = position < 10 ? singlePositions : doublePositions;
+
+            var daysAgo = (new Date().getTime() - player.lastSeen.getTime()) / 1000 / 60 / 60 / 24;
+            boolean isBanned = BanImprovements.isPlayerBanned(player.getKey());
+            String banned = isBanned ? "| Porttikielto" : "";
+
+            messageLines.add("#" + position + "." + positionString + "| " + playerName + " | " + daysAgo + " vrk " + banned);
+            position++;
+        }
+
+        // Convert the list to an array and call privateBroadcast.
+        String[] messageArray = messageLines.toArray(new String[0]);
+
+        SystemNotifications.privateBroadcast(server, sender, messageArray);
+    }
+
+    private PlayerTrackerData[] getWorstPlayers(int howMany) {
+        // Create a map to store the combined playtime data.
+        Map<String, PlayerTrackerData> combinedData = new HashMap<>();
+
+        // Add the playtime data from the database for all players.
+        repository.streamAllValues().forEach(playerData -> {
+            combinedData.put(playerData.getKey(), playerData);
+        });
+
+        // DEBUG:
+        System.out.println("getWorstPlayers: Combined data size: " + combinedData.size());
+
+        // Sort the combined data by last seen time and fetch the top players who have not played.
+        return combinedData.values().stream()
+                .filter(data -> data.lastSeen != null)
+                .sorted(Comparator.comparing(data -> data.lastSeen))
+                .limit(howMany)
+                .toArray(PlayerTrackerData[]::new);
+    }
+
+
+    private void showPlayerStatistics(@NotNull CommandSender sender, String[] args) {
+
+        // /pelaajat kadonneet
+        if (args.length > 0 && args[0].equalsIgnoreCase("kadonneet")) {
+            showPlayerWhoHaveNotPlayed(sender);
+            return;
+        }
+
         // Create top 10 list of players by playtime.
         PlayerTrackerData[] topPlayers = getTopPlayers(10);
 
@@ -167,6 +238,7 @@ public class PlayerTracker implements Listener, CommandExecutor, PlayerLogoutLis
         String[] messageArray = messageLines.toArray(new String[0]);
         SystemNotifications.privateBroadcast(server, sender, messageArray);
     }
+
 
     private PlayerTrackerData[] getTopPlayers(int howMany) {
         // Create a map to store the combined playtime data.
