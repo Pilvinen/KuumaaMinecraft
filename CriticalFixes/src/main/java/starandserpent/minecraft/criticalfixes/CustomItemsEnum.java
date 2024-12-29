@@ -46,7 +46,27 @@ public enum CustomItemsEnum {
     HAT_FARMER(282036, Material.SHULKER_SHELL, "heinähattu", 16, "Heinähattu"),
     HAT_SHEPHERD(282037, Material.SHULKER_SHELL, "paimentolaishattu", 16, "Paimentolaishattu"),
     HAT_FISHERMAN(282038, Material.SHULKER_SHELL, "huopahattu", 16, "Huopahattu"),
-    HAT_FLETCHER(282039, Material.SHULKER_SHELL, "metsästyshattu", 16, "Metsästyshattu");
+    HAT_FLETCHER(282039, Material.SHULKER_SHELL, "metsästyshattu", 16, "Metsästyshattu"),
+    RED_HAT(282040, Material.SHULKER_SHELL, "hiippalakki", 16, "Hiippalakki"),
+    BLACK_HOOD(282041, Material.SHULKER_SHELL, "musta_huppu", 16, "Musta huppu"),
+    // Curtains, left side.
+    ONE_CURTAIN_LEFT_FULLY_CLOSED(282042, Material.SHULKER_SHELL, "1_verho_vasen_täysin_kiinni", 64, "Vasemmanpuoleinen verho"),
+    TWO_CURTAIN_LEFT_ALMOST_CLOSED(282043, Material.SHULKER_SHELL, "2_verho_vasen_melkein_kiinni", 64, "Vasemmanpuoleinen verho"),
+    THREE_CURTAIN_LEFT_HALFWAY(282044, Material.SHULKER_SHELL, "3_verho_vasen_puoliväli", 64, "Vasemmanpuoleinen verho"),
+    FOUR_CURTAIN_LEFT_ALMOST_OPEN(282045, Material.SHULKER_SHELL, "4_verho_vasen_melkein_auki", 64, "Vasemmanpuoleinen verho"),
+    FIVE_CURTAIN_LEFT_FULLY_OPEN(282046, Material.SHULKER_SHELL, "5_verho_vasen_täysin_auki", 64, "Vasemmanpuoleinen verho"),
+    SIX_CURTAIN_LEFT_ALMOST_OPEN(282047, Material.SHULKER_SHELL, "6_verho_vasen_melkein_auki", 64, "Vasemmanpuoleinen verho"),
+    SEVEN_CURTAIN_LEFT_HALFWAY(282048, Material.SHULKER_SHELL, "7_verho_vasen_puoliväli", 64, "Vasemmanpuoleinen verho"),
+    EIGHT_CURTAIN_LEFT_ALMOST_CLOSED(282049, Material.SHULKER_SHELL, "8_verho_vasen_melkein_kiinni", 64, "Vasemmanpuoleinen verho"),
+    // Curtains, right side.
+    ONE_CURTAIN_RIGHT_FULLY_CLOSED(282050, Material.SHULKER_SHELL, "1_verho_oikea_täysin_kiinni", 64, "Oikeanpuoleinen verho"),
+    TWO_CURTAIN_RIGHT_ALMOST_CLOSED(282051, Material.SHULKER_SHELL, "2_verho_oikea_melkein_kiinni", 64, "Oikeanpuoleinen verho"),
+    THREE_CURTAIN_RIGHT_HALFWAY(282052, Material.SHULKER_SHELL, "3_verho_oikea_puoliväli", 64, "Oikeanpuoleinen verho"),
+    FOUR_CURTAIN_RIGHT_ALMOST_OPEN(282053, Material.SHULKER_SHELL, "4_verho_oikea_melkein_auki", 64, "Oikeanpuoleinen verho"),
+    FIVE_CURTAIN_RIGHT_FULLY_OPEN(282054, Material.SHULKER_SHELL, "5_verho_oikea_täysin_auki", 64, "Oikeanpuoleinen verho"),
+    SIX_CURTAIN_RIGHT_ALMOST_OPEN(282055, Material.SHULKER_SHELL, "6_verho_oikea_melkein_auki", 64, "Oikeanpuoleinen verho"),
+    SEVEN_CURTAIN_RIGHT_HALFWAY(282056, Material.SHULKER_SHELL, "7_verho_oikea_puoliväli", 64, "Oikeanpuoleinen verho"),
+    EIGHT_CURTAIN_RIGHT_ALMOST_CLOSED(282057, Material.SHULKER_SHELL, "8_verho_oikea_melkein_kiinni", 64, "Oikeanpuoleinen verho");
 
     // Constructor.
     private final int id;
