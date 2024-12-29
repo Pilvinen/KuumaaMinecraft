@@ -2,6 +2,12 @@ package starandserpent.minecraft.criticalfixes;
 
 import com.vdurmont.emoji.EmojiManager;
 import com.vdurmont.emoji.EmojiParser;
+import github.scarsz.discordsrv.DiscordSRV;
+import github.scarsz.discordsrv.api.Subscribe;
+import github.scarsz.discordsrv.api.events.DiscordGuildMessagePreBroadcastEvent;
+import github.scarsz.discordsrv.dependencies.kyori.adventure.text.Component;
+import github.scarsz.discordsrv.dependencies.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import github.scarsz.discordsrv.util.MessageUtil;
 import net.minso.chathead.API.ChatHeadAPI;
 import net.minso.chathead.API.SkinSource;
 import org.bukkit.ChatColor;
@@ -14,6 +20,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -22,15 +29,14 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class KuuChat implements Listener {
     private final JavaPlugin plugin;
     private Server server;
+    private static DiscordSRV discord;
+    private DiscordSRVListener discordsrvListener;
 
     // Logger.
     private Logger log = Logger.getLogger("KuuChat");
@@ -173,7 +179,7 @@ public class KuuChat implements Listener {
 
 //    private String testFaceGzippedBase64 = "H4sIAAAAAAAAA3WQUQ4DIQhED8MFEJTVT9117n+kNi1kY+v6M+GFYRDKJQkzyeR+SwLnP+idpaXxZDh7LfYwxe0O30wPpVnHUTWqdeZWAExMYrDcUyDnaC2gSwR9E2AoyCRXGWZhcAn4eT8rhX0xoF+j96i2f/BLeIvNnNTITC+VgNtjredZ8xwunS+QuofZwAEAAA==";
 
-    public KuuChat(JavaPlugin plugin) throws IOException {
+    public KuuChat(JavaPlugin plugin, DiscordSRV discordSRV) throws IOException {
         this.plugin = plugin;
 
         // Get server.
@@ -194,6 +200,9 @@ public class KuuChat implements Listener {
         handler.setFormatter(new CustomChatLogFormatter());
         log.setUseParentHandlers(false);
         log.addHandler(handler);
+
+        this.discord = discordSRV;
+        this.discordsrvListener = new DiscordSRVListener(plugin);
 
         // Log server start messages.
         var logTimestamp = new java.text.SimpleDateFormat("dd.MM.yyyy, HH:mm").format(new java.util.Date());
@@ -493,7 +502,78 @@ public class KuuChat implements Listener {
         var logMessage = String.format("[%s] %s: %s", logTimestamp, playerName, message);
         log.info(logMessage);
 
+        // Send to Discord.
+        var disCordGuild = discord.getMainGuild();
+        var discordChannel = disCordGuild.getTextChannelById("1320726086337691679");
+        var headForDiscord = "\uD83D\uDC64";
+        var discordFormattedMessage = "KuuChat [" + timestamp + "] **" + headForDiscord + "** **" + playerName + "**: " + message;
+
+//        String webHookName = "Kuumaa";
+//        String webHookAvatarUrl = "https://sessionserver.mojang.com/session/minecraft/profile/" + playerUUID;
+//        MessageEmbed embed = null;
+
+//        WebhookUtil.deliverMessage(discordChannel, webHookName, webHookAvatarUrl, discordFormattedMessage, embed);
+//
+        discordChannel.sendMessage(discordFormattedMessage).queue();
     }
+
+
+    // API DOCS! https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/hooks/AnnotatedEventManager.html
+    // Hook up to EventHandler preprocess event for receiving message from Discord.
+    // We use DiscordGuildMessagePostProcessEvent
+    @Subscribe
+    public void onMessageFromDiscordToMinecraft(DiscordGuildMessagePreBroadcastEvent event) {    // Get the message from the event
+        Component message = event.getMessage();
+        String messageAsString = PlainTextComponentSerializer.plainText().serialize(message);
+        String[] messageParts = messageAsString.split("\\|\\|\\|");
+
+        // Ensure the message has at least two parts
+        if (messageParts.length < 2) {
+            plugin.getLogger().warning("Received a malformed message from Discord: " + messageAsString);
+            return;
+        }
+
+        String messageSender = messageParts[0].trim();
+        String messageContent = messageParts[1].trim();
+
+        // Append player face in front of the message
+        String mojangHatlessFace;
+
+        // Get the UUID for offline player based on name
+        var playerUUID = server.getOfflinePlayer(messageSender).getUniqueId();
+        if (playerUUID != null) {
+            mojangHatlessFace = chatHeadAPI.getHeadAsString(playerUUID, false, SkinSource.MOJANG);
+            // DEBUG: Print raw characters in the mojangHatlessFace.
+//            System.out.println("mojangHatlessFace: " + mojangHatlessFace);
+        } else {
+            // Use steve face instead
+            mojangHatlessFace = steveFace;
+        }
+
+        // Format the message
+        var formattedMessage = String.format(ChatColor.DARK_GRAY + "[" + ChatColor.GRAY + "Discord" + ChatColor.DARK_GRAY + "] " + ChatColor.RESET + mojangHatlessFace + ChatColor.RESET + " " + ChatColor.WHITE + messageSender + ": " + ChatColor.GRAY + messageContent);
+
+        // Apply the changes to the event
+//        event.setMessage(Component.text(formattedMessage));
+
+//        event.setMessage(null); // Works but errors on the console.
+
+        // Convert to a component via DiscordSRV serializer. Otherwise the colors will becomes broken!
+        Component legacyMessage = MessageUtil.toComponent(formattedMessage);
+        // Apply the changes to the event.
+        event.setMessage(legacyMessage);
+
+        // loop players and send the message.
+//        for (Player recipient : server.getOnlinePlayers()) {
+//            recipient.sendMessage(formattedMessage);
+//        }
+
+        // TODO: Try to grab the information from the message
+        // TODO: cancel the event somehow and
+        // TODO: send the message to the server chat by my own means.
+    }
+
+
 
     private void tryToGetLastEmoji(Player player, String message) {
         // Get the last emoji in the message.
@@ -530,5 +610,16 @@ public class KuuChat implements Listener {
         return formattedMessage;
     }
 
+
+    // Send to Discord as broadcast.
+    public static void broadcastToDiscord(String message) {
+        var time = java.time.LocalDateTime.now();
+        var timestamp = time.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
+        var disCordGuild = discord.getMainGuild();
+        var discordChannel = disCordGuild.getTextChannelById("1320726086337691679");
+        var symbolForDiscord = "★";
+        var discordFormattedMessage = "KuuChat [" + timestamp + "] **" + symbolForDiscord + "** **" + message + "**";
+        discordChannel.sendMessage(discordFormattedMessage).queue();
+    }
 
 }
