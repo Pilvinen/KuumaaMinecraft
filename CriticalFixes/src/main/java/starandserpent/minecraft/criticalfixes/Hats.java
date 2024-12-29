@@ -80,6 +80,8 @@ public class Hats implements Listener {
         put(new ShulkerHatKey(Material.SHULKER_SHELL, CustomItemsEnum.RED_HAT, new Permission("hats.wear.shulker_hats.hiippalakki")), new Permission("hats.wear.shulker_hats." + CustomItemsEnum.RED_HAT.getGiveItemName().toLowerCase()));
         // Musta huppu.
         put(new ShulkerHatKey(Material.SHULKER_SHELL, CustomItemsEnum.BLACK_HOOD, new Permission("hats.wear.shulker_hats.musta_huppu")), new Permission("hats.wear.shulker_hats." + CustomItemsEnum.BLACK_HOOD.getGiveItemName().toLowerCase()));
+        // Pelimannin hatty.
+        put(new ShulkerHatKey(Material.SHULKER_SHELL, CustomItemsEnum.HAT_BARD, new Permission("hats.wear.shulker_hats.pelimannin_hattu")), new Permission("hats.wear.shulker_hats." + CustomItemsEnum.HAT_BARD.getGiveItemName().toLowerCase()));
     }};
 
 

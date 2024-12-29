@@ -66,7 +66,9 @@ public enum CustomItemsEnum {
     FIVE_CURTAIN_RIGHT_FULLY_OPEN(282054, Material.SHULKER_SHELL, "5_verho_oikea_täysin_auki", 64, "Oikeanpuoleinen verho"),
     SIX_CURTAIN_RIGHT_ALMOST_OPEN(282055, Material.SHULKER_SHELL, "6_verho_oikea_melkein_auki", 64, "Oikeanpuoleinen verho"),
     SEVEN_CURTAIN_RIGHT_HALFWAY(282056, Material.SHULKER_SHELL, "7_verho_oikea_puoliväli", 64, "Oikeanpuoleinen verho"),
-    EIGHT_CURTAIN_RIGHT_ALMOST_CLOSED(282057, Material.SHULKER_SHELL, "8_verho_oikea_melkein_kiinni", 64, "Oikeanpuoleinen verho");
+    EIGHT_CURTAIN_RIGHT_ALMOST_CLOSED(282057, Material.SHULKER_SHELL, "8_verho_oikea_melkein_kiinni", 64, "Oikeanpuoleinen verho"),
+    // More hats
+    HAT_BARD(282058, Material.SHULKER_SHELL, "pelimannin_hattu", 16, "Pelimannin hattu");
 
     // Constructor.
     private final int id;
