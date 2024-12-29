@@ -2,9 +2,18 @@ name: CriticalFixes
 version: '${project.version}'
 main: starandserpent.minecraft.criticalfixes.CriticalFixes
 api-version: '1.20'
-depend: [ ProtocolLib, NDatabase ]
-softdepend: [ Tooltips ]
+depend: [ ProtocolLib, NDatabase, Citizens ]
+softdepend: [ Tooltips, DiscordSRV ]
 commands:
+  resurssipaketti:
+    description: Lataa uusiksi palvelimen resurssipaketti.
+    usage: /resurssipaketti, /resurssipaketti kaikki/kaikille/all/everyone/pakota/force
+  respack:
+    description: Lataa uusiksi palvelimen resurssipaketti.
+    usage: /respack, /respack kaikki/kaikille/all/everyone/pakota/force
+  resourcepack:
+    description: Lataa uusiksi palvelimen resurssipaketti.
+    usage: /resourcepack, /resourcepack kaikki/kaikille/all/everyone/pakota/force
   hyväksypelaaja:
     description: Hyväksy pelaaja palvelimelle. Siirtää pelaajan Kuumaan spawnille.
     usage: /hyväksypelaaja <pelaajan nimi>
@@ -40,7 +49,7 @@ commands:
     usage: /players
   top10:
     description: Player statistics.
-    usage: /top10
+    usage: /top10, top10 kadonneet
   player:
     description: Player information.
     usage: /player <playerName>

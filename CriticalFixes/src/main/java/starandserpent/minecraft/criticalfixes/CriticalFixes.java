@@ -6,6 +6,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import github.scarsz.discordsrv.DiscordSRV;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,6 +20,7 @@ public final class CriticalFixes extends JavaPlugin {
     private ProtocolManager protocolManager;
 
     private KuuChat kuuChat;
+    private CitizensListener citizensListener;
 
     @Override public void onDisable() {
         System.out.println("Unloading CriticalFixes.");
@@ -110,6 +112,10 @@ public final class CriticalFixes extends JavaPlugin {
         registerWhoWasHereWhileYouWereGone();
         registerCommands();
         registerIntroduction();
+        registerCitizensIntegration();
+        registerPermissionManager();
+        registerCurtains();
+        registerResourcePackLoader();
     }
 
     private void showVersionNumber() {
@@ -183,7 +189,8 @@ public final class CriticalFixes extends JavaPlugin {
 
     private void registerKuuChat() throws IOException {
         System.out.println("CriticalFixes: Loading KuuChat.");
-        kuuChat = new KuuChat(this);
+        kuuChat = new KuuChat(this, DiscordSRV.getPlugin());
+        DiscordSRV.api.subscribe(kuuChat);
         pluginManager.registerEvents(kuuChat, this);
     }
 
@@ -588,6 +595,32 @@ public final class CriticalFixes extends JavaPlugin {
         var introduction = new Introduction(this);
         pluginManager.registerEvents(introduction, this);
         getCommand("hyväksypelaaja").setExecutor(introduction);
+    }
+
+    private void registerCitizensIntegration() {
+        System.out.println("CriticalFixes: Registering Citizens integration.");
+        citizensListener = new CitizensListener();
+        pluginManager.registerEvents(citizensListener, this);
+    }
+
+    private void registerPermissionManager() {
+        System.out.println("CriticalFixes: Loading PermissionManager.");
+        var permissionManager = new PermissionManager(this);
+        pluginManager.registerEvents(permissionManager, this);
+    }
+
+    private void registerCurtains() {
+        System.out.println("CriticalFixes: Loading Curtains.");
+        var curtains = new Curtains(this);
+        pluginManager.registerEvents(curtains, this);
+    }
+
+    private void registerResourcePackLoader() {
+        System.out.println("CriticalFixes: Loading ResourcePackLoader.");
+        var resourcePackLoader = new ResourcePackLoader(this);
+        getCommand("resourcepack").setExecutor(resourcePackLoader);
+        getCommand("respack").setExecutor(resourcePackLoader);
+        getCommand("resurssipaketti").setExecutor(resourcePackLoader);
     }
 
 }
