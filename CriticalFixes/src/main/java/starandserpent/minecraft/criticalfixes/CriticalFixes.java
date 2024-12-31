@@ -118,6 +118,7 @@ public final class CriticalFixes extends JavaPlugin {
         registerCurtains();
         registerResourcePackLoader();
         registerLockingMechanism();
+        registerOreFixes();
     }
 
     private void showVersionNumber() {
@@ -629,6 +630,12 @@ public final class CriticalFixes extends JavaPlugin {
         System.out.println("CriticalFixes: Loading Locking.");
         var lockingMechanism = new LockingMechanism(this);
         pluginManager.registerEvents(lockingMechanism, this);
+    }
+
+    private void registerOreFixes() {
+        System.out.println("CriticalFixes: Loading OreFixes.");
+        var oreFixes = new OreFixes(this);
+        pluginManager.registerEvents(oreFixes, this);
     }
 
 }

@@ -70,6 +70,8 @@ public enum CustomItemsEnum {
     // More hats
     HAT_BARD(282058, Material.SHULKER_SHELL, "pelimannin_hattu", 16, "Pelimannin hattu");
 
+
+
     // Constructor.
     private final int id;
     private final Material material;
