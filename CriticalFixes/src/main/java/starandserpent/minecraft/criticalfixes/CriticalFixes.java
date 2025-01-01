@@ -109,7 +109,7 @@ public final class CriticalFixes extends JavaPlugin {
         registerPlayerIdleTracker();
         registerBetterRestartServer();
         registerDamageEffects();
-        registerGoldCoins();
+        registerCustomCoins();
         registerWhoWasHereWhileYouWereGone();
         registerCommands();
         registerIntroduction();
@@ -569,10 +569,10 @@ public final class CriticalFixes extends JavaPlugin {
         pluginManager.registerEvents(damageEffects, this);
     }
 
-    private void registerGoldCoins() {
-        System.out.println("CriticalFixes: Loading GoldCoins.");
-        var goldCoins = new GoldCoins(this);
-        pluginManager.registerEvents(goldCoins, this);
+    private void registerCustomCoins() {
+        System.out.println("CriticalFixes: Loading CustomCoins.");
+        var customCoins = new CustomCoins(this);
+        pluginManager.registerEvents(customCoins, this);
     }
 
     private void registerWhoWasHereWhileYouWereGone() {

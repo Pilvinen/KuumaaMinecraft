@@ -68,8 +68,12 @@ public enum CustomItemsEnum {
     SEVEN_CURTAIN_RIGHT_HALFWAY(282056, Material.SHULKER_SHELL, "7_verho_oikea_puoliväli", 64, "Oikeanpuoleinen verho"),
     EIGHT_CURTAIN_RIGHT_ALMOST_CLOSED(282057, Material.SHULKER_SHELL, "8_verho_oikea_melkein_kiinni", 64, "Oikeanpuoleinen verho"),
     // More hats
-    HAT_BARD(282058, Material.SHULKER_SHELL, "pelimannin_hattu", 16, "Pelimannin hattu");
+    HAT_BARD(282058, Material.SHULKER_SHELL, "pelimannin_hattu", 16, "Pelimannin hattu"),
 
+    IRON_COIN_PILE(282059, Material.SHULKER_SHELL, "kasa_rautakolikoita", 64, "Kasa rautakolikoita"),
+    IRON_COIN_STACK(282060, Material.SHULKER_SHELL, "pino_rautakolikoita", 64, "Pino rautakolikoita"),
+    NETHERITE_COIN_PILE(282061, Material.SHULKER_SHELL, "kasa_netheriittikolikoita", 64, "Kasa netheriittikolikoita"),
+    NETHERITE_COIN_STACK(282062, Material.SHULKER_SHELL, "pino_netheriittikolikoita", 64, "Pino netheriittikolikoita");
 
 
     // Constructor.
